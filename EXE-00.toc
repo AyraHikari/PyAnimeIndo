@@ -61,7 +61,7 @@
  [],
  False,
  False,
- 1644033090,
+ 1644034207,
  [('run.exe',
    'C:\\Users\\tedyr\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python39\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\run.exe',
    'EXECUTABLE')])
