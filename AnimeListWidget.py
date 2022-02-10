@@ -83,7 +83,7 @@ class Ui_AnimeIndo(object):
         self.AnimeList_Search.setProperty("isWrapping", True)
         self.AnimeList_Search.setResizeMode(QtWidgets.QListView.Fixed)
         self.AnimeList_Search.setLayoutMode(QtWidgets.QListView.Batched)
-        self.AnimeList_Search.setGridSize(QtCore.QSize(100, 250))
+        self.AnimeList_Search.setGridSize(QtCore.QSize(120, 200))
         self.AnimeList_Search.setViewMode(QtWidgets.QListView.IconMode)
         self.AnimeList_Search.setModelColumn(0)
         self.AnimeList_Search.setUniformItemSizes(True)
