@@ -1,0 +1,1 @@
+python3 -m PyInstaller pyanimeindo.py --hidden-import PyQt5.sip
