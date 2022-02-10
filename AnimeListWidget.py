@@ -77,7 +77,7 @@ class Ui_AnimeIndo(object):
         self.AnimeList_Search.setDragDropOverwriteMode(False)
         self.AnimeList_Search.setDragDropMode(QtWidgets.QAbstractItemView.NoDragDrop)
         self.AnimeList_Search.setDefaultDropAction(QtCore.Qt.CopyAction)
-        self.AnimeList_Search.setIconSize(QtCore.QSize(225, 314))
+        self.AnimeList_Search.setIconSize(QtCore.QSize(120, 167))
         self.AnimeList_Search.setMovement(QtWidgets.QListView.Static)
         self.AnimeList_Search.setFlow(QtWidgets.QListView.LeftToRight)
         self.AnimeList_Search.setProperty("isWrapping", True)
@@ -126,3 +126,4 @@ class Ui_AnimeIndo(object):
         self.menuTentang.setTitle(_translate("AnimeIndo", "Tentang"))
         self.actionExit.setText(_translate("AnimeIndo", "Exit"))
         self.actionPengaturan.setText(_translate("AnimeIndo", "Pengaturan"))
+import resources_rc
