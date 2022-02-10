@@ -3,3 +3,5 @@ build
 dist
 *.ui
 config.ini
+AnimeInfoWidgetOld.py
+*.qrc

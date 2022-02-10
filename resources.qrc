@@ -1,0 +1,18 @@
+<RCC>
+  <qresource prefix="images">
+    <file>img/c1.jpg</file>
+  </qresource>
+  <qresource prefix="icons">
+    <file>img/star_half.svg</file>
+    <file>img/clock.svg</file>
+    <file>img/close.svg</file>
+    <file>img/genre.svg</file>
+    <file>img/github.png</file>
+    <file>img/kofi.svg</file>
+    <file>img/star_off.svg</file>
+    <file>img/star_on.svg</file>
+    <file>img/status.svg</file>
+    <file>img/studio.svg</file>
+    <file>img/type.svg</file>
+  </qresource>
+</RCC>

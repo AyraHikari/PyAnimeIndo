@@ -6,17 +6,18 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import (
 	QApplication, QMainWindow, QDialog, QMessageBox, QFileDialog
 )
-from PyQt5.QtCore import QObject, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QObject, QThread, pyqtSignal
 from PyQt5.uic import loadUi
 
 from AnimeListWidget import Ui_AnimeIndo
 from AnimeInfoWidget import Ui_Dialog as Ui_AnimeInfo
 from About import Ui_Dialog as Ui_About
 from Settings import Ui_Dialog as Ui_Settings
+from Streaming import Ui_Form as Ui_Streaming
 
 from API.animeindo import get_main, get_episodes, get_download, searchAnime
 from API.zdl import zdl
-from utils.utils import remove_first_end_spaces
+from utils.utils import remove_first_end_spaces, make_rounded
 from utils.opendialog import OpenDialogApp
 
 DEBUG = False
@@ -69,6 +70,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 	def info(self):
 		d = self.AnimeList.currentItem().statusTip()
 		dialog = AnimeInfo(self)
+		dialog.setWindowModality(Qt.ApplicationModal)
 		dialog.show()
 		t = threading.Thread(target=dialog.loadURL, args=(d,))
 		t.start()
@@ -76,6 +78,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 	def infoS(self):
 		d = self.AnimeList_Search.currentItem().statusTip()
 		dialog = AnimeInfo(self)
+		dialog.setWindowModality(Qt.ApplicationModal)
 		dialog.show()
 		t = threading.Thread(target=dialog.loadURL, args=(d,))
 		t.start()
@@ -98,10 +101,12 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 
 	def about(self):
 		dialog = About(self)
+		dialog.setWindowModality(Qt.ApplicationModal)
 		dialog.show()
 
 	def settings(self):
 		dialog = Settings(self)
+		dialog.setWindowModality(Qt.ApplicationModal)
 		dialog.show()
 
 
@@ -111,9 +116,15 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		self.setupUi(self)
 
 		self.AnimeEps.itemClicked.connect(self.getQuality)
-		self.AnimeQuality.itemClicked.connect(self.getDownload)
 		self.StreamingBtn.clicked.connect(self.doStreaming)
 		self.DownloadBtn.clicked.connect(self.doDownload)
+
+		self.firstQuality.clicked.connect(self.checkDownload1)
+		self.secondQuality.clicked.connect(self.checkDownload2)
+		self.thirdQuality.clicked.connect(self.checkDownload3)
+		self.fourthQuality.clicked.connect(self.checkDownload4)
+
+		self.recommendList.doubleClicked.connect(self.reInfo)
 
 	def loadURL(self, data):
 		# Get Anime
@@ -121,49 +132,193 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		data = get_episodes(data)
 
 		image = QtGui.QPixmap()
-		image.loadFromData(requests.get(data['cover']).content)
+		imageData = make_rounded(requests.get(data['cover']).content)
 		dataTitle = remove_first_end_spaces(data['title'].lower().replace("subtitle indonesia", "").title())
 		self.AnimeTitle.setText(dataTitle)
-		self.AnimeDesc.setText(data['info'] + "\n\n" + data['sinopsis'])
-		self.AnimeCover.setPixmap(image)
+		self.AnimeCover.setPixmap(imageData)
+		self.AnimeSinopsis.setText(data['sinopsis'] if data['sinopsis'] else "Tidak ada...")
+
+		# Get anime info
+		skor = 4
+		for infoData in data['info'].split("\n"):
+			if "studio" in infoData.lower():
+				self.infoStudio.setText(remove_first_end_spaces(infoData.split(":")[1]))
+			if "genre" in infoData.lower():
+				self.infoGenre.setText(remove_first_end_spaces(infoData.split(":")[1]))
+			if "status" in infoData.lower():
+				self.infoStatus.setText(remove_first_end_spaces(infoData.split(":")[1]))
+			if "durasi" in infoData.lower():
+				self.infoType.setText(remove_first_end_spaces(infoData.split(":")[1]))
+			if "skor" in infoData.lower():
+				val = remove_first_end_spaces(infoData.split(":")[1])
+				if val:
+					skor = int(float(val)/2)
+					if skor >= 1:
+						self.star1.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
+					if skor >= 2:
+						self.star2.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
+					if skor >= 3:
+						self.star3.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
+					if skor >= 4:
+						self.star4.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
+					if skor >= 5:
+						self.star5.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
 
 		self.setWindowTitle(remove_first_end_spaces(data['info'].lower().split("judul:")[1].split("\n")[0]).title())
 
 		# Parse episodes
 		self.AnimeEps.clear()
+		totalEps = "0"
 		for item in data['episodes']:
 			eps_title = item['title'].lower().replace("subtitle indonesia", "")
 			if data['info']:
 				eps_title = eps_title.replace(remove_first_end_spaces(data['info'].lower().split("judul:")[1].split("\n")[0]), "")
 			eps_title = remove_first_end_spaces(eps_title.replace(dataTitle.lower(), "")).title()
 
+			if totalEps == "0":
+				if x := [x for x in eps_title.split() if x.isdigit()]:
+					totalEps = remove_first_end_spaces(x[0])
+
 			eps = QtWidgets.QListWidgetItem()
 			eps.setText(eps_title)
 			eps.setStatusTip(item['url'])
 			self.AnimeEps.addItem(eps)
 
+		if totalEps:
+			self.totalEpisode.setText(f"1 - {totalEps} Episodes")
+
+		self.recommendList.clear()
+		for item in data['recommend']:
+			eps = QtWidgets.QListWidgetItem()
+			aniTitle = item['title']
+			if len(aniTitle) >= 11:
+				aniTitle = aniTitle[:8] + "..."
+			eps.setText(aniTitle)
+			eps.setStatusTip(item['url'])
+			imageData = make_rounded(requests.get(item['cover']).content)
+			eps.setIcon(QtGui.QIcon(imageData))
+			self.recommendList.addItem(eps)
+
 		self.AnimeEps.setEnabled(True)
+
+	def reInfo(self):
+		d = self.recommendList.currentItem().statusTip()
+		self.close()
+		dialog = AnimeInfo(self)
+		dialog.setWindowModality(Qt.ApplicationModal)
+		dialog.show()
+		t = threading.Thread(target=dialog.loadURL, args=(d,))
+		t.start()
 
 	def getQuality(self, data):
 		t = threading.Thread(target=self.getQualityThread, args=(data,))
 		t.start()
+
+	def checkDownload1(self):
+		if self.firstQuality.styleSheet().split("background: ")[1].split(";")[0] != "#FFF":
+			self.greyAllQ()
+			self.firstQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
+
+		if "zippyshare" in self.firstQuality.statusTip():
+			self.StreamingBtn.setEnabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
+		else:
+			self.StreamingBtn.setDisabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #2D2D2D;border-radius: 4px;color: #FFFFFF;")
+	
+	def checkDownload2(self):
+		if self.secondQuality.styleSheet().split("background: ")[1].split(";")[0] != "#FFF":
+			self.greyAllQ()
+			self.secondQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
+
+		if "zippyshare" in self.secondQuality.statusTip():
+			self.StreamingBtn.setEnabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
+		else:
+			self.StreamingBtn.setDisabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #2D2D2D;border-radius: 4px;color: #FFFFFF;")
 		
+	def checkDownload3(self):
+		if self.thirdQuality.styleSheet().split("background: ")[1].split(";")[0] != "#FFF":
+			self.greyAllQ()
+			self.thirdQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
+
+		if "zippyshare" in self.thirdQuality.statusTip():
+			self.StreamingBtn.setEnabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
+		else:
+			self.StreamingBtn.setDisabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #2D2D2D;border-radius: 4px;color: #FFFFFF;")
+	
+	def checkDownload4(self):
+		if self.fourthQuality.styleSheet().split("background: ")[1].split(";")[0] != "#FFF":
+			self.greyAllQ()
+			self.fourthQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
+
+		if "zippyshare" in self.fourthQuality.statusTip():
+			self.StreamingBtn.setEnabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
+		else:
+			self.StreamingBtn.setDisabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #2D2D2D;border-radius: 4px;color: #FFFFFF;")
+
+	
+	def greyAllQ(self):
+		if self.firstQuality.styleSheet().split("background: ")[1].split(";")[0] != "#FFF":
+			self.firstQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
+		if self.secondQuality.styleSheet().split("background: ")[1].split(";")[0] != "#FFF":
+			self.secondQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
+		if self.thirdQuality.styleSheet().split("background: ")[1].split(";")[0] != "#FFF":
+			self.thirdQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
+		if self.fourthQuality.styleSheet().split("background: ")[1].split(";")[0] != "#FFF":
+			self.fourthQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
+
 	def getQualityThread(self, data):
 		targeturl = data.statusTip()
 		printd("Fetching: " + targeturl)
 		webdata = get_download(targeturl)
 
 		# Parse quality
-		self.AnimeQuality.clear()
+		isFirst = False
 		for item in webdata:
-			eps = QtWidgets.QListWidgetItem()
-			eps.setText(item)
-			eps.setStatusTip(webdata[item])
-			self.AnimeQuality.addItem(eps)
+			if "360p" in item:
+				self.firstQuality.setStatusTip(webdata[item])
+				if not isFirst:
+					self.firstQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
+					isFirst = True
+				else:
+					self.firstQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
+			elif "480p" in item:
+				self.secondQuality.setStatusTip(webdata[item])
+				if not isFirst:
+					self.secondQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
+					isFirst = True
+				else:
+					self.secondQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
+			elif "720p" in item:
+				self.thirdQuality.setStatusTip(webdata[item])
+				if not isFirst:
+					self.thirdQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
+					isFirst = True
+				else:
+					self.thirdQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
+			elif "1080p" in item:
+				self.fourthQuality.setStatusTip(webdata[item])
+				if not isFirst:
+					self.fourthQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
+					isFirst = True
+				else:
+					self.fourthQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
 
-		self.AnimeQuality.setEnabled(True)
-		self.DownloadBtn.setDisabled(True)
-		self.StreamingBtn.setDisabled(True)
+		if "zippyshare" in self.firstQuality.statusTip():
+			self.StreamingBtn.setEnabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
+		else:
+			self.StreamingBtn.setDisabled(True)
+			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #2D2D2D;border-radius: 4px;color: #FFFFFF;")
+
+		self.DownloadBtn.setEnabled(True)
+		self.DownloadBtn.setStyleSheet("padding: 12px 8px;position: absolute;border: 1px solid rgba(45, 45, 45, 0.6);border-radius: 4px;color: #000;background: #fff;")
 
 	def getDownload(self, data):
 		targeturl = self.AnimeQuality.currentItem().statusTip()
@@ -182,36 +337,59 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			alert.setText(comment)
 			alert.exec()
 			dialog = Settings(self)
+			dialog.setWindowModality(Qt.ApplicationModal)
 			dialog.show()
 			self.enabledAll()
 			return
-		targeturl = self.AnimeQuality.currentItem().statusTip()
+		targeturl = self.getAnimeQuality()
+		dialog = Streaming(self)
+		dialog.setWindowModality(Qt.ApplicationModal)
+		dialog.setWindowFlag(Qt.WindowCloseButtonHint, False)
+		dialog.show()
 		printd("Fetching: " + targeturl)
 		zdirect = zdl(targeturl)
 
 		#subp.Popen(str("D:\\Apps\\mpv" + "\\mpv " + zdirect), shell=True)
-		t = threading.Thread(target=self.start_mpv, name="MPV Player", args=(zdirect,))
+		t = threading.Thread(target=self.start_mpv, name="MPV Player", args=(zdirect,dialog,))
 		t.start()
 
 	def doDownload(self, data):
-		targeturl = self.AnimeQuality.currentItem().statusTip()
+		targeturl = self.getAnimeQuality()
 		printd("Open: " + targeturl)
 		webbrowser.open(targeturl)
 
+	def getAnimeQuality(self):
+		targeturl = ""
+		if self.firstQuality.styleSheet().split("background: ")[1].split(";")[0] == "#2D2D2D":
+			targeturl = self.firstQuality.statusTip()
+		if self.secondQuality.styleSheet().split("background: ")[1].split(";")[0] == "#2D2D2D":
+			targeturl = self.secondQuality.statusTip()
+		if self.thirdQuality.styleSheet().split("background: ")[1].split(";")[0] == "#2D2D2D":
+			targeturl = self.thirdQuality.statusTip()
+		if self.fourthQuality.styleSheet().split("background: ")[1].split(";")[0] == "#2D2D2D":
+			targeturl = self.fourthQuality.statusTip()
+		return targeturl
+
 	def disabledAll(self):
 		self.AnimeEps.setDisabled(True)
-		self.AnimeQuality.setDisabled(True)
+		self.firstQuality.setDisabled(True)
+		self.secondQuality.setDisabled(True)
+		self.thirdQuality.setDisabled(True)
+		self.fourthQuality.setDisabled(True)
 		self.DownloadBtn.setDisabled(True)
 		self.StreamingBtn.setDisabled(True)
 
 	def enabledAll(self):
 		self.AnimeEps.setEnabled(True)
-		self.AnimeQuality.setEnabled(True)
+		self.firstQuality.setEnabled(True)
+		self.secondQuality.setEnabled(True)
+		self.thirdQuality.setEnabled(True)
+		self.fourthQuality.setEnabled(True)
 		self.DownloadBtn.setEnabled(True)
 		self.StreamingBtn.setEnabled(True)
 
 
-	def start_mpv(self, url):
+	def start_mpv(self, url, dialog):
 		mpv_cmd = "mpv"
 		settings = loadSettings()
 		if settings.get("mpv_path"):
@@ -220,6 +398,8 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		p = subp.Popen(mpv_cmd + " " + url, shell=True)
 		while p.poll() is None:
 			time.sleep(1)
+
+		dialog.close()
 		self.enabledAll()
 
 
@@ -299,6 +479,11 @@ class Settings(QDialog, Ui_Settings):
 			alert.setText("Data tersimpan!")
 		alert.exec()
 		self.close()
+
+class Streaming(QDialog, Ui_Streaming):
+	def __init__(self, parent=None):
+		super().__init__(parent)
+		self.setupUi(self)
 
 
 def loadSettings():

@@ -9,11 +9,11 @@ import time
 import subprocess as subp
 import zipfile
 
-import py7zr
+#import py7zr
 
 from bs4 import BeautifulSoup
 from .zdl import zdl
-from pyDownload import Downloader
+#from pyDownload import Downloader
 
 try:
 	import distro
@@ -140,6 +140,14 @@ def get_episodes(url):
 			url = eps.find('a')['href']
 			date = eps.find('span', {"class": "zeebr"}).text
 			ret['episodes'].append({"title": title, "url": url, "date": date})
+
+	ret['recommend'] = []
+	recommendationData = data.find("div", {"class": "isi-recommend-anime-series"}).findAll("div", {"class": "isi-konten"})
+	for reclist in recommendationData:
+		title = reclist.span.text
+		url = reclist.a['href']
+		cover = reclist.img['src']
+		ret['recommend'].append({"title": title, "url": url, "cover": cover})
 
 	return ret
 
