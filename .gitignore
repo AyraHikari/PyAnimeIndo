@@ -1,0 +1,9 @@
+__pycache__
+build
+dist
+*.ui
+config.ini
+UI
+doc
+mpv_path.txt
+*.bat
