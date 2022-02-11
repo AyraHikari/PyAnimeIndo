@@ -1,9 +1,15 @@
 <RCC>
   <qresource prefix="images">
+    <file>ayra.jpg</file>
     <file>img/c1.jpg</file>
   </qresource>
   <qresource prefix="icons">
-    <file>img/star_half.svg</file>
+    <file>img/collection.svg</file>
+    <file>img/film.svg</file>
+    <file>img/latest.svg</file>
+    <file>img/time.svg</file>
+    <file>img/bookmark.svg</file>
+    <file>img/cog.svg</file>
     <file>img/clock.svg</file>
     <file>img/close.svg</file>
     <file>img/genre.svg</file>

@@ -1,6 +1,7 @@
 import sys, time, requests, threading, webbrowser
 import subprocess as subp
 from platform import python_version
+from multiprocessing.pool import ThreadPool
 
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import (
@@ -17,7 +18,7 @@ from Streaming import Ui_Form as Ui_Streaming
 
 from API.animeindo import get_main, get_episodes, get_download, searchAnime
 from API.zdl import zdl
-from utils.utils import remove_first_end_spaces, make_rounded
+from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color
 from utils.opendialog import OpenDialogApp
 
 DEBUG = False
@@ -33,29 +34,63 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		t = threading.Thread(target=self.getLatest)
 		t.start()
 		self.AnimeList.doubleClicked.connect(self.info)
-		self.AnimeList_Search.doubleClicked.connect(self.infoS)
-		#self.searchBar.textChanged.connect(self.search)
-		self.searchBar.editingFinished.connect(self.search)
-		self.searchBtn.clicked.connect(self.search)
-		self.menuTentang.aboutToShow.connect(self.about)
-		self.actionPengaturan.triggered.connect(self.settings)
-		self.actionExit.triggered.connect(self.close)
+		
+		# Menu bar
+		self.latestBtn.clicked.connect(self.latestBtnAct)
+		self.jadwalBtn.clicked.connect(self.jadwalBtnAct)
+		self.historyBtn.clicked.connect(self.historyBtnAct)
+		self.savedBtn.clicked.connect(self.savedBtnAct)
+		#self.searchBar.editingFinished.connect(self.search)
+		#self.searchBtn.clicked.connect(self.search)
+		#self.menuTentang.aboutToShow.connect(self.about)
+		#self.actionPengaturan.triggered.connect(self.settings)
+		#self.actionExit.triggered.connect(self.close)
+
+		self.profilePic.setPixmap(make_rounded_res("C:/Users/tedyr/Pictures/Me/ayra.jpg"))
+		#self.settingsIcon.setPixmap(svg_color("C:/Users/tedyr/Documents/Workspace/Python/PyAnimeIndo/UI/img/gear.svg", color='#3F51B5'))
+
+	def disableMenuBg(self):
+		self.latestActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
+		self.jadwalActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
+		self.historyActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
+		self.savedActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
+
+	def latestBtnAct(self):
+		self.disableMenuBg()
+		self.latestActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
+		self.tabWidget.setCurrentIndex(0)
+
+	def jadwalBtnAct(self):
+		self.disableMenuBg()
+		self.jadwalActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
+		self.tabWidget.setCurrentIndex(1)
+
+	def historyBtnAct(self):
+		self.disableMenuBg()
+		self.historyActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
+		self.tabWidget.setCurrentIndex(2)
+
+	def savedBtnAct(self):
+		self.disableMenuBg()
+		self.savedActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
+		self.tabWidget.setCurrentIndex(3)
 
 	def getLatest(self):
 		self.AnimeList.clear()
 		ongoing = get_main()
-		for data in ongoing:
+		results = ThreadPool(16).map(self.addThumbMultiThread, ongoing)
+		for r in results:
+			self.AnimeList.addItem(r)
+		#for data in ongoing:
 			#self.addThumbThread(data)
-			t = threading.Thread(target=self.addThumbThread, args=(data,))
-			t.start()
+			#t = threading.Thread(target=self.addThumbThread, args=(data,))
+			#t.start()
 
 	def addThumbThread(self, data, is_search=False):
-		self.statusInfo.setText("Mendapatkan data...")
 		anime = QtWidgets.QListWidgetItem()
 		anime.setText(data['title'])
-		image = QtGui.QPixmap()
-		image.loadFromData(requests.get(data['img']).content)
-		anime.setIcon(QtGui.QIcon(image))
+		imageData = make_rounded(requests.get(data['img']).content)
+		anime.setIcon(QtGui.QIcon(imageData))
 		anime.setStatusTip(data['url'])
 		font = QtGui.QFont()
 		font.setFamily("Segoe UI")
@@ -64,7 +99,21 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			self.AnimeList_Search.addItem(anime)
 		else:
 			self.AnimeList.addItem(anime)
-		self.statusInfo.setText("")
+
+	def addThumbMultiThread(self, data, is_search=False):
+		anime = QtWidgets.QListWidgetItem()
+		anime.setText(data['title'])
+		imageData = make_rounded(requests.get(data['img']).content, data['eps'])
+		anime.setIcon(QtGui.QIcon(imageData))
+		anime.setStatusTip(data['url'])
+		font = QtGui.QFont()
+		font.setFamily("Segoe UI")
+		anime.setFont(font)
+		#if is_search:
+		#	self.AnimeList_Search.addItem(anime)
+		#else:
+		#	self.AnimeList.addItem(anime)
+		return anime
 		
 
 	def info(self):
@@ -84,7 +133,6 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		t.start()
 
 	def search(self, data=None):
-		self.statusInfo.setText("Mencari...")
 		data = self.searchBar.text()
 		t = threading.Thread(target=self.searchThread, args=(data,))
 		t.start()
@@ -97,7 +145,6 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			#self.addThumbThread(data)
 			t = threading.Thread(target=self.addThumbThread, args=(data, True,))
 			t.start()
-		self.statusInfo.setText("")
 
 	def about(self):
 		dialog = About(self)
@@ -188,18 +235,22 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			self.totalEpisode.setText(f"1 - {totalEps} Episodes")
 
 		self.recommendList.clear()
-		for item in data['recommend']:
-			eps = QtWidgets.QListWidgetItem()
-			aniTitle = item['title']
-			if len(aniTitle) >= 11:
-				aniTitle = aniTitle[:8] + "..."
-			eps.setText(aniTitle)
-			eps.setStatusTip(item['url'])
-			imageData = make_rounded(requests.get(item['cover']).content)
-			eps.setIcon(QtGui.QIcon(imageData))
-			self.recommendList.addItem(eps)
+		results = ThreadPool(5).map(self.setRecommendedList, data['recommend'])
+		for r in results:
+			self.recommendList.addItem(r)
 
 		self.AnimeEps.setEnabled(True)
+
+	def setRecommendedList(self, item):
+		eps = QtWidgets.QListWidgetItem()
+		aniTitle = item['title']
+		if len(aniTitle) >= 11:
+			aniTitle = aniTitle[:12] + "..."
+		eps.setText(aniTitle)
+		eps.setStatusTip(item['url'])
+		imageData = make_rounded(requests.get(item['cover']).content)
+		eps.setIcon(QtGui.QIcon(imageData))
+		return eps
 
 	def reInfo(self):
 		d = self.recommendList.currentItem().statusTip()
@@ -274,6 +325,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			self.fourthQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
 
 	def getQualityThread(self, data):
+		self.disabledAll()
 		targeturl = data.statusTip()
 		printd("Fetching: " + targeturl)
 		webdata = get_download(targeturl)
@@ -319,6 +371,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 
 		self.DownloadBtn.setEnabled(True)
 		self.DownloadBtn.setStyleSheet("padding: 12px 8px;position: absolute;border: 1px solid rgba(45, 45, 45, 0.6);border-radius: 4px;color: #000;background: #fff;")
+		self.enabledAll()
 
 	def getDownload(self, data):
 		targeturl = self.AnimeQuality.currentItem().statusTip()
@@ -347,11 +400,18 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		dialog.setWindowFlag(Qt.WindowCloseButtonHint, False)
 		dialog.show()
 		printd("Fetching: " + targeturl)
-		zdirect = zdl(targeturl)
-
-		#subp.Popen(str("D:\\Apps\\mpv" + "\\mpv " + zdirect), shell=True)
-		t = threading.Thread(target=self.start_mpv, name="MPV Player", args=(zdirect,dialog,))
-		t.start()
+		try:
+			zdirect = zdl(targeturl)
+			t = threading.Thread(target=self.start_mpv, name="MPV Player", args=(zdirect,dialog,))
+			t.start()
+		except Exception as err:
+			alert = QMessageBox()
+			alert.setWindowTitle("Peringatan")
+			if str(err) == "Failed to get file URL. Down?":
+				alert.setText("Link rusak, tolong pilih resolusi lainnya")
+			alert.exec()
+			dialog.close()
+			self.enabledAll()
 
 	def doDownload(self, data):
 		targeturl = self.getAnimeQuality()

@@ -1,6 +1,6 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtGui import QImage, QPixmap, QIcon, QPainter, QColor
 
 
 def remove_end_spaces(string):
@@ -31,16 +31,40 @@ def add_corners(im, rad):
 	im.putalpha(alpha)
 	return im
 
-def make_rounded(pic):
+def make_rounded(pic, eps=None):
 	im = Image.open(BytesIO(pic))
+	if eps:
+		im = write_eps_cover(im, eps)
 	im = add_corners(im, 15)
 	return pil2pixmap(im)
 
+def make_rounded_res(pic):
+	im = Image.open(pic)
+	im = add_corners(im, int(im.size[0]/2))
+	return pil2pixmap(im)
+
+def write_eps_cover(img, eps):
+	draw = ImageDraw.Draw(img)
+	w, h = img.size
+	font = ImageFont.truetype("img/Roboto.ttf", 16)
+	text_w, text_h = draw.textsize(eps, font)
+	draw.rounded_rectangle((-30, h - h/12-2, text_w +12, h + text_h), 5, fill="#E8EFF5")
+	draw.text((5, h - text_h - 5), eps, "black", font=font)
+	return img
+
 def pil2pixmap(image):
-    bytes_img = BytesIO()
-    image.save(bytes_img, format='png')
+	bytes_img = BytesIO()
+	image.save(bytes_img, format='png')
 
-    qimg = QImage()
-    qimg.loadFromData(bytes_img.getvalue())
+	qimg = QImage()
+	qimg.loadFromData(bytes_img.getvalue())
 
-    return QPixmap.fromImage(qimg)
+	return QPixmap.fromImage(qimg)
+
+def svg_color(im, color='black'):
+	img = QPixmap(im)
+	qp = QPainter(img)
+	qp.setCompositionMode(QPainter.CompositionMode_SourceIn)
+	qp.fillRect( img.rect(), QColor(color) ) 
+	qp.end()
+	return img
