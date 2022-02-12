@@ -118,14 +118,12 @@ def get_main():
 	ret = []
 
 	animelists = data.find('div', {'class': 'venz'})
-	c = 0
 	for anime in animelists.findAll("li"):
-		c += 1
 		title = anime.find('h2', {"class": "jdlflm"}).text
 		eps = anime.find('div', {"class": "epz"}).text
 		img = anime.find('img')['src']
 		url = anime.find('a')['href']
-		ret.append({"n": c, "title": title, "eps": eps, "img": img, "url": url})
+		ret.append({"title": title, "eps": eps, "img": img, "url": url})
 
 	return ret
 

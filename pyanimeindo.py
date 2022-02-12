@@ -18,8 +18,9 @@ from Streaming import Ui_Form as Ui_Streaming
 
 from API.animeindo import get_main, get_episodes, get_download, searchAnime
 from API.zdl import zdl
-from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color
+from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime
 from utils.opendialog import OpenDialogApp
+from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking
 
 DEBUG = False
 
@@ -33,7 +34,9 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 
 		t = threading.Thread(target=self.getLatest)
 		t.start()
-		self.AnimeList.doubleClicked.connect(self.info)
+		self.AnimeList.doubleClicked.connect(lambda: self.info(self.AnimeList))
+		self.historyAnimeList.doubleClicked.connect(lambda: self.info(self.historyAnimeList))
+		self.savedAnimeList.doubleClicked.connect(lambda: self.info(self.savedAnimeList))
 		
 		# Menu bar
 		self.latestBtn.clicked.connect(self.latestBtnAct)
@@ -75,6 +78,13 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.savedActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
 		self.tabWidget.setCurrentIndex(3)
 
+		self.savedAnimeList.clear()
+		d = getSavedAnimeList()
+		results = ThreadPool(16).map(self.addThumbMultiThread, d)
+		for r in results:
+			self.savedAnimeList.addItem(r)
+
+
 	def getLatest(self):
 		self.AnimeList.clear()
 		ongoing = get_main()
@@ -100,36 +110,35 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		else:
 			self.AnimeList.addItem(anime)
 
-	def addThumbMultiThread(self, data, is_search=False):
+	def addThumbMultiThread(self, data):
 		anime = QtWidgets.QListWidgetItem()
 		anime.setText(data['title'])
 		imageData = make_rounded(requests.get(data['img']).content, data['eps'])
 		anime.setIcon(QtGui.QIcon(imageData))
 		anime.setStatusTip(data['url'])
+		anime.setWhatsThis(str(data))
 		font = QtGui.QFont()
 		font.setFamily("Segoe UI")
 		anime.setFont(font)
-		#if is_search:
-		#	self.AnimeList_Search.addItem(anime)
-		#else:
-		#	self.AnimeList.addItem(anime)
 		return anime
 		
 
-	def info(self):
-		d = self.AnimeList.currentItem().statusTip()
+	def info(self, signalType):
+		d = signalType.currentItem().statusTip()
+		strd = signalType.currentItem().whatsThis()
 		dialog = AnimeInfo(self)
 		dialog.setWindowModality(Qt.ApplicationModal)
 		dialog.show()
-		t = threading.Thread(target=dialog.loadURL, args=(d,))
+		t = threading.Thread(target=dialog.loadURL, args=(d,strd,))
 		t.start()
 
 	def infoS(self):
 		d = self.AnimeList_Search.currentItem().statusTip()
+		strd = self.AnimeList.currentItem().whatsThis()
 		dialog = AnimeInfo(self)
 		dialog.setWindowModality(Qt.ApplicationModal)
 		dialog.show()
-		t = threading.Thread(target=dialog.loadURL, args=(d,))
+		t = threading.Thread(target=dialog.loadURL, args=(d,strd,))
 		t.start()
 
 	def search(self, data=None):
@@ -172,11 +181,12 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		self.fourthQuality.clicked.connect(self.checkDownload4)
 
 		self.recommendList.doubleClicked.connect(self.reInfo)
+		self.saveThis.clicked.connect(self.saveAnime)
 
-	def loadURL(self, data):
+	def loadURL(self, urlData, strdata=None):
 		# Get Anime
-		printd("Fetching: " + data)
-		data = get_episodes(data)
+		printd("Fetching: " + urlData)
+		data = get_episodes(urlData)
 
 		image = QtGui.QPixmap()
 		imageData = make_rounded(requests.get(data['cover']).content)
@@ -184,6 +194,15 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		self.AnimeTitle.setText(dataTitle)
 		self.AnimeCover.setPixmap(imageData)
 		self.AnimeSinopsis.setText(data['sinopsis'] if data['sinopsis'] else "Tidak ada...")
+
+		if strdata:
+			if urlData in getSavedAnime():
+				self.saveThis.setIcon(QtGui.QIcon(":/icons/img/bookmark.svg"))
+				self.saveThis.setStyleSheet("padding: 12px 8px;\nposition: absolute;\nborder: 1px solid rgba(45, 45, 45, 0.8);\nborder-radius: 4px;\ncolor: #000;\nbackground: #fff;")
+			else:
+				self.saveThis.setIcon(QtGui.QIcon(":/icons/img/bookmark_outline.svg"))
+				self.saveThis.setStyleSheet("padding: 12px 8px;\nposition: absolute;\nborder: 1px solid rgba(45, 45, 45, 0.3);\nborder-radius: 4px;\ncolor: #000;\nbackground: #fff;")
+			self.saveThis.setStatusTip(str(strdata))
 
 		# Get anime info
 		skor = 4
@@ -448,6 +467,20 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		self.DownloadBtn.setEnabled(True)
 		self.StreamingBtn.setEnabled(True)
 
+	def saveAnime(self):
+		d = self.saveThis.statusTip()
+		if not d:
+			return
+
+		if eval(d)['url'] in getSavedAnime():
+			deleteDataAnime(eval(d)['url'])
+			self.saveThis.setIcon(QtGui.QIcon(":/icons/img/bookmark_outline.svg"))
+			self.saveThis.setStyleSheet("padding: 12px 8px;\nposition: absolute;\nborder: 1px solid rgba(45, 45, 45, 0.3);\nborder-radius: 4px;\ncolor: #000;\nbackground: #fff;")
+		else:
+			saveDataAnime(eval(d)['url'], d)
+			self.saveThis.setIcon(QtGui.QIcon(":/icons/img/bookmark.svg"))
+			self.saveThis.setStyleSheet("padding: 12px 8px;\nposition: absolute;\nborder: 1px solid rgba(45, 45, 45, 0.8);\nborder-radius: 4px;\ncolor: #000;\nbackground: #fff;")
+
 
 	def start_mpv(self, url, dialog):
 		mpv_cmd = "mpv"
@@ -546,49 +579,8 @@ class Streaming(QDialog, Ui_Streaming):
 		self.setupUi(self)
 
 
-def loadSettings():
-	data = {}
-	try:
-		r = open("config.ini", "r")
-		for l in r.read().split("\n"):
-			if "=" in l:
-				data[l.split("=")[0]] = l.split("=")[1]
-	except FileNotFoundError:
-		pass
-	return data
 
-def saveSettings(data):
-	cfile = ""
-	for l in data:
-		cfile += "{}={}\n".format(l, data[l])
-	w = open("config.ini", "w")
-	w.write(cfile)
-	w.close
-	return True
 
-def checkMpvWorking():
-	mpvPath = "mpv"
-
-	settings = loadSettings()
-	if settings.get("mpv_path"):
-		mpvPath = settings['mpv_path']
-	print(mpvPath)
-
-	try:
-		process = subp.Popen([mpvPath, '-V'], stdout=subp.PIPE, stderr=subp.PIPE)
-		out, err = process.communicate()
-	except FileNotFoundError:
-		out, err = ("", "FileNotFoundError")
-	except OSError:
-		out, err = ("", "File tidak valid!")
-
-	alert = QMessageBox()
-	if out and not err:
-		return 1, out.decode('utf-8')
-	elif err == "FileNotFoundError":
-		return 0, "MPV tidak ditemukan!\nKalian bisa install MPV atau atur path kustom MPV diatas"
-	else:
-		return 0, "MPV ditemukan, tapi gagal!\n\n" + str(err)
 
 def printd(text):
 	if DEBUG:

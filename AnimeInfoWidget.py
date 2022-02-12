@@ -21,7 +21,7 @@ class Ui_Dialog(object):
         self.AnimeCover.setScaledContents(True)
         self.AnimeCover.setObjectName("AnimeCover")
         self.AnimeTitle = QtWidgets.QLabel(Dialog)
-        self.AnimeTitle.setGeometry(QtCore.QRect(230, 20, 470, 60))
+        self.AnimeTitle.setGeometry(QtCore.QRect(230, 20, 391, 60))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(16)
@@ -333,6 +333,20 @@ class Ui_Dialog(object):
         self.recommendList.setFlow(QtWidgets.QListView.TopToBottom)
         self.recommendList.setViewMode(QtWidgets.QListView.IconMode)
         self.recommendList.setObjectName("recommendList")
+        self.saveThis = QtWidgets.QPushButton(Dialog)
+        self.saveThis.setGeometry(QtCore.QRect(640, 20, 60, 60))
+        self.saveThis.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.saveThis.setStyleSheet("padding: 12px 8px;\n"
+"position: absolute;\n"
+"border: 1px solid rgba(45, 45, 45, 0.3);\n"
+"border-radius: 4px;\n"
+"color: #000;\n"
+"background: #fff;")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icons/img/bookmark_outline.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.saveThis.setIcon(icon)
+        self.saveThis.setIconSize(QtCore.QSize(32, 32))
+        self.saveThis.setObjectName("saveThis")
 
         self.retranslateUi(Dialog)
         self.AnimeEps.setCurrentRow(-1)
@@ -341,12 +355,30 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        self.AnimeCover.setWhatsThis(_translate("Dialog", "Cover anime"))
+        self.AnimeTitle.setWhatsThis(_translate("Dialog", "Judul anime"))
+        self.AnimeEps.setWhatsThis(_translate("Dialog", "Episode yang tersedia"))
+        self.StreamingBtn.setWhatsThis(_translate("Dialog", "Streaming anime dengan MPV"))
         self.StreamingBtn.setText(_translate("Dialog", "Streaming"))
+        self.DownloadBtn.setWhatsThis(_translate("Dialog", "Download anime dengan membuka browser"))
         self.DownloadBtn.setText(_translate("Dialog", "Download"))
+        self.firstQuality.setWhatsThis(_translate("Dialog", "Kualitas anime untuk download atau streaming anime"))
         self.firstQuality.setText(_translate("Dialog", "360p"))
+        self.secondQuality.setWhatsThis(_translate("Dialog", "Kualitas anime untuk download atau streaming anime"))
         self.secondQuality.setText(_translate("Dialog", "480p"))
+        self.thirdQuality.setWhatsThis(_translate("Dialog", "Kualitas anime untuk download atau streaming anime"))
         self.thirdQuality.setText(_translate("Dialog", "720p"))
+        self.fourthQuality.setWhatsThis(_translate("Dialog", "Kualitas anime untuk download atau streaming anime"))
         self.fourthQuality.setText(_translate("Dialog", "1080p"))
+        self.widget.setWhatsThis(_translate("Dialog", "Info anime"))
+        self.totalEpisode.setWhatsThis(_translate("Dialog", "Jumlah episode, mungkin akan bertambah seiring waktu"))
+        self.star1.setWhatsThis(_translate("Dialog", "Rating anime"))
+        self.star2.setWhatsThis(_translate("Dialog", "Rating anime"))
+        self.star3.setWhatsThis(_translate("Dialog", "Rating anime"))
+        self.star4.setWhatsThis(_translate("Dialog", "Rating anime"))
+        self.star5.setWhatsThis(_translate("Dialog", "Rating anime"))
         self.label_15.setText(_translate("Dialog", "Sinopsis"))
+        self.AnimeSinopsis.setWhatsThis(_translate("Dialog", "Sinopsis"))
         self.label_17.setText(_translate("Dialog", "Rekomendasi Serupa"))
+        self.recommendList.setWhatsThis(_translate("Dialog", "List rekomendasi anime"))
 import resources_rc

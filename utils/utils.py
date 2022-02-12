@@ -1,6 +1,13 @@
+import subprocess as subp
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
+
 from PyQt5.QtGui import QImage, QPixmap, QIcon, QPainter, QColor
+from PyQt5.QtWidgets import (
+	QMessageBox
+)
+
+from .database import loadSettings, saveSettings
 
 
 def remove_end_spaces(string):
@@ -68,3 +75,27 @@ def svg_color(im, color='black'):
 	qp.fillRect( img.rect(), QColor(color) ) 
 	qp.end()
 	return img
+
+def checkMpvWorking():
+	mpvPath = "mpv"
+
+	settings = loadSettings()
+	if settings.get("mpv_path"):
+		mpvPath = settings['mpv_path']
+	print(mpvPath)
+
+	try:
+		process = subp.Popen([mpvPath, '-V'], stdout=subp.PIPE, stderr=subp.PIPE)
+		out, err = process.communicate()
+	except FileNotFoundError:
+		out, err = ("", "FileNotFoundError")
+	except OSError:
+		out, err = ("", "File tidak valid!")
+
+	alert = QMessageBox()
+	if out and not err:
+		return 1, out.decode('utf-8')
+	elif err == "FileNotFoundError":
+		return 0, "MPV tidak ditemukan!\nKalian bisa install MPV atau atur path kustom MPV diatas"
+	else:
+		return 0, "MPV ditemukan, tapi gagal!\n\n" + str(err)
