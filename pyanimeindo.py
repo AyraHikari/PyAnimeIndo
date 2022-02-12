@@ -43,11 +43,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.jadwalBtn.clicked.connect(self.jadwalBtnAct)
 		self.historyBtn.clicked.connect(self.historyBtnAct)
 		self.savedBtn.clicked.connect(self.savedBtnAct)
-		#self.searchBar.editingFinished.connect(self.search)
-		#self.searchBtn.clicked.connect(self.search)
-		#self.menuTentang.aboutToShow.connect(self.about)
-		#self.actionPengaturan.triggered.connect(self.settings)
-		#self.actionExit.triggered.connect(self.close)
+		self.settingsBtn.clicked.connect(self.settings)
 
 		self.profilePic.setPixmap(make_rounded_res("C:/Users/tedyr/Pictures/Me/ayra.jpg"))
 		#self.settingsIcon.setPixmap(svg_color("C:/Users/tedyr/Documents/Workspace/Python/PyAnimeIndo/UI/img/gear.svg", color='#3F51B5'))
@@ -529,6 +525,7 @@ class Settings(QDialog, Ui_Settings):
 		self.testMPV.clicked.connect(self.testVideoPlayer)
 		self.mpvBrowse.clicked.connect(self.browseMPV)
 		self.saveConfig.clicked.connect(self.saveSettings)
+		self.exitBtn.clicked.connect(self.close)
 
 	def testVideoPlayer(self):
 		mpvPath = "mpv"
