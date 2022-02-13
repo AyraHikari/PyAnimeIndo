@@ -28,6 +28,9 @@ Selain itu, tanpa adanya browser atau iklan mengganggu, tidak akan terjadinya CP
 ![image](https://user-images.githubusercontent.com/36266025/153732528-5b07914a-8d4f-414f-80c9-62b7bb1e0225.png)
 ![image](https://user-images.githubusercontent.com/36266025/153732535-9f656a21-9009-45a6-bc86-d9f20e6269df.png)
 
+# Perbandingan dengan dan tanpa Anime4k
+![image](https://user-images.githubusercontent.com/36266025/153733742-eaaecc5c-0cd1-4454-a0a2-604c55c3cc6b.png)
+
 # Credits
 - Programmer/Designer: [Ayra Hikari](https://github.com/AyraHikari)
 - Icon: [heroicons](https://heroicons.com)
