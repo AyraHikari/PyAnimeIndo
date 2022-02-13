@@ -20,7 +20,8 @@ Selain itu, tanpa adanya browser atau iklan mengganggu, tidak akan terjadinya CP
 - Dan lain-lain
 
 # Download
-- [Releases](https://github.com/AyraHikari/PyAnimeIndo/releases)
+- [Releases](https://github.com/AyraHikari/PyAnimeIndo/releases) (tanpa donasi)
+- [pling](https://www.pling.com/p/1707646/) (donasi dengan cara men-download tanpa iklan)
 
 # Screenshot
 ![image](https://user-images.githubusercontent.com/36266025/153732526-8e60ff1d-0638-4f2b-86d1-fc2f267dc12e.png)
