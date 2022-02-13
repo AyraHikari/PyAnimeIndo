@@ -24,6 +24,7 @@ class Ui_AnimeIndo(object):
         self.profilePic.setStyleSheet("border-radius: 25%;\n"
 "background-color: #ccc;\n"
 "color: rgb(50, 50, 50);")
+        self.profilePic.setPixmap(QtGui.QPixmap(":/font/Roboto.ttf"))
         self.profilePic.setScaledContents(True)
         self.profilePic.setObjectName("profilePic")
         self.sidebarBg = QtWidgets.QLabel(self.centralwidget)

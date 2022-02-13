@@ -2,6 +2,7 @@ import subprocess as subp
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 
+from PyQt5.QtCore import QFile
 from PyQt5.QtGui import QImage, QPixmap, QIcon, QPainter, QColor
 from PyQt5.QtWidgets import (
 	QMessageBox
@@ -56,7 +57,12 @@ def make_rounded_res(pic, is_bytes=False):
 def write_eps_cover(img, eps):
 	draw = ImageDraw.Draw(img)
 	w, h = img.size
-	font = ImageFont.truetype("img/Roboto.ttf", 16)
+
+	stream = QFile(":/font/Roboto.ttf")
+	if stream.open(QFile.ReadOnly):
+		fontData = stream.readAll()
+		stream.close()
+	font = ImageFont.truetype(BytesIO(fontData), 16)
 	text_w, text_h = draw.textsize(eps, font)
 	draw.rounded_rectangle((-30, h - h/12-2, text_w +12, h + text_h), 5, fill="#E8EFF5")
 	draw.text((5, h - text_h - 5), eps, "black", font=font)

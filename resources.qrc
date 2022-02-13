@@ -3,6 +3,9 @@
     <file>img/c1.jpg</file>
     <file>ayra.jpg</file>
   </qresource>
+  <qresource prefix="font">
+    <file>Roboto.ttf</file>
+  </qresource>
   <qresource prefix="icons">
     <file>img/bookmark_outline.svg</file>
     <file>img/collection.svg</file>
