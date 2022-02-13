@@ -19,6 +19,9 @@ Selain itu, tanpa adanya browser atau iklan mengganggu, tidak akan terjadinya CP
 - Gratis tanpa berlangganan
 - Dan lain-lain
 
+# Download
+- [Releases](https://github.com/AyraHikari/PyAnimeIndo/releases)
+
 # Screenshot
 ![image](https://user-images.githubusercontent.com/36266025/153732526-8e60ff1d-0638-4f2b-86d1-fc2f267dc12e.png)
 ![image](https://user-images.githubusercontent.com/36266025/153732528-5b07914a-8d4f-414f-80c9-62b7bb1e0225.png)
