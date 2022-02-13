@@ -24,6 +24,9 @@ from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res,
 
 DEBUG = False
 
+QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
 
 class MainWindow(QMainWindow, Ui_AnimeIndo):
 	dataLatest = {}
@@ -44,6 +47,9 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.historyBtn.clicked.connect(self.historyBtnAct)
 		self.savedBtn.clicked.connect(self.savedBtnAct)
 		self.settingsBtn.clicked.connect(self.settings)
+
+		# Others
+		self.searchBar.editingFinished.connect(lambda: self.search(self.searchBar, self.AnimeList))
 
 		stream = QFile(":/images/ayra.jpg")
 		if stream.open(QFile.ReadOnly):
@@ -113,7 +119,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 	def addThumbMultiThread(self, data):
 		anime = QtWidgets.QListWidgetItem()
 		anime.setText(data['title'])
-		imageData = make_rounded(requests.get(data['img']).content, data['eps'])
+		imageData = make_rounded(requests.get(data['img']).content, eps=data['eps'] if data.get('eps') else None)
 		anime.setIcon(QtGui.QIcon(imageData))
 		anime.setStatusTip(data['url'])
 		anime.setWhatsThis(str(data))
@@ -141,10 +147,14 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		t = threading.Thread(target=dialog.loadURL, args=(d,strd,))
 		t.start()
 
-	def search(self, data=None):
-		data = self.searchBar.text()
-		t = threading.Thread(target=self.searchThread, args=(data,))
-		t.start()
+	def search(self, signalType, listData):
+		title = signalType.text()
+
+		listData.clear()
+		lists = searchAnime(title)
+		results = ThreadPool(16).map(self.addThumbMultiThread, lists)
+		for r in results:
+			listData.addItem(r)
 
 	def searchThread(self, title):
 		self.AnimeList_Search.clear()

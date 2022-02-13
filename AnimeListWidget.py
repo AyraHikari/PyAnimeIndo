@@ -15,7 +15,8 @@ class Ui_AnimeIndo(object):
     def setupUi(self, AnimeIndo):
         AnimeIndo.setObjectName("AnimeIndo")
         AnimeIndo.resize(950, 700)
-        AnimeIndo.setMaximumSize(QtCore.QSize(1200, 700))
+        AnimeIndo.setMinimumSize(QtCore.QSize(950, 700))
+        AnimeIndo.setMaximumSize(QtCore.QSize(950, 700))
         AnimeIndo.setStyleSheet("background-color: #fff;")
         self.centralwidget = QtWidgets.QWidget(AnimeIndo)
         self.centralwidget.setObjectName("centralwidget")
@@ -222,7 +223,7 @@ class Ui_AnimeIndo(object):
 "color: rgb(20, 20, 20);")
         self.searchBar.setObjectName("searchBar")
         self.AnimeList = QtWidgets.QListWidget(self.tab)
-        self.AnimeList.setGeometry(QtCore.QRect(20, 50, 671, 631))
+        self.AnimeList.setGeometry(QtCore.QRect(15, 60, 671, 631))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.AnimeList.setFont(font)
