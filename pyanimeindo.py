@@ -150,20 +150,15 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 	def search(self, signalType, listData):
 		title = signalType.text()
 
+		t = threading.Thread(target=self.searchThread, args=(title,listData,))
+		t.start()
+
+	def searchThread(self, title, listData):
 		listData.clear()
 		lists = searchAnime(title)
 		results = ThreadPool(16).map(self.addThumbMultiThread, lists)
 		for r in results:
 			listData.addItem(r)
-
-	def searchThread(self, title):
-		self.AnimeList_Search.clear()
-		printd(title)
-		lists = searchAnime(title)
-		for data in lists:
-			#self.addThumbThread(data)
-			t = threading.Thread(target=self.addThumbThread, args=(data, True,))
-			t.start()
 
 	def about(self):
 		dialog = About(self)
