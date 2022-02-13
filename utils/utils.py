@@ -45,8 +45,11 @@ def make_rounded(pic, eps=None):
 	im = add_corners(im, 15)
 	return pil2pixmap(im)
 
-def make_rounded_res(pic):
-	im = Image.open(pic)
+def make_rounded_res(pic, is_bytes=False):
+	if not is_bytes:
+		im = Image.open(pic)
+	else:
+		im = Image.open(BytesIO(pic))
 	im = add_corners(im, int(im.size[0]/2))
 	return pil2pixmap(im)
 

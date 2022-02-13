@@ -7,7 +7,7 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import (
 	QApplication, QMainWindow, QDialog, QMessageBox, QFileDialog
 )
-from PyQt5.QtCore import Qt, QObject, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QFile, QObject, QThread, pyqtSignal
 from PyQt5.uic import loadUi
 
 from AnimeListWidget import Ui_AnimeIndo
@@ -45,7 +45,11 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.savedBtn.clicked.connect(self.savedBtnAct)
 		self.settingsBtn.clicked.connect(self.settings)
 
-		self.profilePic.setPixmap(make_rounded_res("C:/Users/tedyr/Pictures/Me/ayra.jpg"))
+		stream = QFile(":/images/ayra.jpg")
+		if stream.open(QFile.ReadOnly):
+			profilePic = stream.readAll()
+			stream.close()
+			self.profilePic.setPixmap(make_rounded_res(profilePic, is_bytes=True))
 		#self.settingsIcon.setPixmap(svg_color("C:/Users/tedyr/Documents/Workspace/Python/PyAnimeIndo/UI/img/gear.svg", color='#3F51B5'))
 
 	def disableMenuBg(self):
