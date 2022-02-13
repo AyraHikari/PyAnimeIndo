@@ -84,6 +84,10 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.savedActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
 		self.tabWidget.setCurrentIndex(3)
 
+		t = threading.Thread(target=self.savedBtnThread)
+		t.start()
+
+	def savedBtnThread(self):
 		self.savedAnimeList.clear()
 		d = getSavedAnimeList()
 		results = ThreadPool(16).map(self.addThumbMultiThread, d)
