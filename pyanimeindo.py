@@ -1,4 +1,4 @@
-import sys, time, requests, threading, webbrowser
+import sys, time, requests, threading, webbrowser, os
 import subprocess as subp
 from platform import python_version
 from multiprocessing.pool import ThreadPool
@@ -20,7 +20,7 @@ from API.animeindo import get_main, get_episodes, get_download, searchAnime
 from API.zdl import zdl
 from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime
 from utils.opendialog import OpenDialogApp
-from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking
+from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking, isWindows
 
 DEBUG = False
 
@@ -34,6 +34,11 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 	def __init__(self, parent=None):
 		super().__init__(parent)
 		self.setupUi(self)
+
+
+		animated_spinner = QtGui.QMovie(":/images/img/ripple.gif")
+		self.loadingAnim.setMovie(animated_spinner)
+		animated_spinner.start()
 
 		t = threading.Thread(target=self.getLatest)
 		t.start()
@@ -99,6 +104,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.AnimeList.clear()
 		ongoing = get_main()
 		results = ThreadPool(16).map(self.addThumbMultiThread, ongoing)
+		self.loadingAnim.setHidden(True)
 		for r in results:
 			self.AnimeList.addItem(r)
 		#for data in ongoing:
@@ -535,7 +541,13 @@ class Settings(QDialog, Ui_Settings):
 		if settings.get("mpv_path"):
 			self.mpvCustomPath.setText(settings['mpv_path'])
 
+		if settings.get("http_proxy"):
+			self.HttpProxy.setText(settings['http_proxy'])
+		if settings.get("https_proxy"):
+			self.HttpsProxy.setText(settings['https_proxy'])
+
 		self.testMPV.clicked.connect(self.testVideoPlayer)
+		self.ProxyTest.clicked.connect(self.testProxy)
 		self.mpvBrowse.clicked.connect(self.browseMPV)
 		self.saveConfig.clicked.connect(self.saveSettings)
 		self.exitBtn.clicked.connect(self.close)
@@ -572,10 +584,39 @@ class Settings(QDialog, Ui_Settings):
 		if fileName:
 			self.mpvCustomPath.setText(fileName)
 
+	def testProxy(self):
+		settings = loadSettings()
+		if http_proxy := settings.get('http_proxy'):
+			os.environ['http_proxy'] = http_proxy
+		if https_proxy := settings.get('https_proxy'):
+			os.environ['https_proxy'] = https_proxy
+		if isWindows():
+			process = subp.Popen(["ping", 'google.com', '-n', '1'], stdout=subp.PIPE, stderr=subp.PIPE)
+		else:
+			process = subp.Popen(["ping", 'google.com', '-c', '1'], stdout=subp.PIPE, stderr=subp.PIPE)
+		out, err = process.communicate()
+
+		try:
+			if isWindows():
+				retms = out.decode('utf-8').split(" time=")[1].split(" ")[0]
+			else:
+				retms = out.decode('utf-8').split(" time=")[1].split("\n")[0]
+		except IndexError:
+			retms = "RTO"
+		self.retms.setText(retms)
+
 	def saveSettings(self):
 		data = {}
+
+		# Path
 		if self.mpvCustomPath.text() != "":
 			data['mpv_path'] = self.mpvCustomPath.text()
+
+		# Proxy
+		#if self.mpvCustomPath.text() != "":
+		#	data['http_proxy'] = self.HttpProxy.text()
+		#	data['https_proxy'] = self.HttpsProxy.text()
+
 		isok = saveSettings(data)
 		alert = QMessageBox()
 		if isok:

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="images">
+    <file>img/ripple.gif</file>
     <file>img/c1.jpg</file>
     <file>ayra.jpg</file>
   </qresource>
@@ -7,6 +8,7 @@
     <file>Roboto.ttf</file>
   </qresource>
   <qresource prefix="icons">
+    <file>img/ripple.svg</file>
     <file>img/bookmark_outline.svg</file>
     <file>img/collection.svg</file>
     <file>img/film.svg</file>

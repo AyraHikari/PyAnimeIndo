@@ -1,3 +1,4 @@
+import os
 import subprocess as subp
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
@@ -10,6 +11,11 @@ from PyQt5.QtWidgets import (
 
 from .database import loadSettings, saveSettings
 
+
+def isWindows():
+	if os.name == 'nt':
+		return True
+	return False
 
 def remove_end_spaces(string):
 	return "".join(string.rstrip())
