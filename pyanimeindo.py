@@ -95,6 +95,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 	def savedBtnThread(self):
 		self.savedAnimeList.clear()
 		d = getSavedAnimeList()
+		[d.pop("eps") for d in d]
 		results = ThreadPool(16).map(self.addThumbMultiThread, d)
 		for r in results:
 			self.savedAnimeList.addItem(r)
