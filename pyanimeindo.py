@@ -16,16 +16,13 @@ from About import Ui_Dialog as Ui_About
 from Settings import Ui_Dialog as Ui_Settings
 from Streaming import Ui_Form as Ui_Streaming
 
-from API.animeindo import get_main, get_episodes, get_download, searchAnime
+from API.animeindo import get_main, get_episodes, get_download, searchAnime, downloadAnime4K, writeLowA4K, writeHighA4K, uninstallA4kdir
 from API.zdl import zdl
 from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime
 from utils.opendialog import OpenDialogApp
 from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking, isWindows
 
 DEBUG = False
-
-QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
 
 class MainWindow(QMainWindow, Ui_AnimeIndo):
@@ -553,6 +550,10 @@ class Settings(QDialog, Ui_Settings):
 		self.saveConfig.clicked.connect(self.saveSettings)
 		self.exitBtn.clicked.connect(self.close)
 
+		self.installA4k1.clicked.connect(lambda: self.InstallA4K(1))
+		self.installA4k2.clicked.connect(lambda: self.InstallA4K(2))
+		self.uninstallA4k.clicked.connect(self.UninstallA4K)
+
 	def testVideoPlayer(self):
 		mpvPath = "mpv"
 		if self.mpvCustomPath.text() != "":
@@ -605,6 +606,34 @@ class Settings(QDialog, Ui_Settings):
 		except IndexError:
 			retms = "RTO"
 		self.retms.setText(retms)
+
+	def InstallA4K(self, value):
+		t = threading.Thread(target=self.downloada4k, args=(value,))
+		t.start()
+
+	def downloada4k(self, value):
+		self.installA4k1.setDisabled(True)
+		self.installA4k2.setDisabled(True)
+		self.uninstallA4k.setDisabled(True)
+		downloadAnime4K()
+		if value == 1:
+			writeHighA4K()
+		else:
+			writeLowA4K()
+		self.installA4k1.setEnabled(True)
+		self.installA4k2.setEnabled(True)
+		self.uninstallA4k.setEnabled(True)
+
+
+	def UninstallA4K(self):
+		self.installA4k1.setDisabled(True)
+		self.installA4k2.setDisabled(True)
+		self.uninstallA4k.setDisabled(True)
+		uninstallA4kdir()
+		self.installA4k1.setEnabled(True)
+		self.installA4k2.setEnabled(True)
+		self.uninstallA4k.setEnabled(True)
+		print("Uninstalled!")
 
 	def saveSettings(self):
 		data = {}
