@@ -187,7 +187,7 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.exitBtn)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

@@ -18,7 +18,7 @@ from Streaming import Ui_Form as Ui_Streaming
 
 from API.animeindo import get_main, get_episodes, get_download, searchAnime, downloadAnime4K, writeLowA4K, writeHighA4K, uninstallA4kdir
 from API.zdl import zdl
-from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime
+from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime, saveHistoryAnime
 from utils.opendialog import OpenDialogApp
 from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking, isWindows
 
@@ -67,21 +67,25 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.savedActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
 
 	def latestBtnAct(self):
+		#self.loadingAnim.setHidden(False)
 		self.disableMenuBg()
 		self.latestActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
 		self.tabWidget.setCurrentIndex(0)
 
 	def jadwalBtnAct(self):
+		#self.loadingAnim.setHidden(False)
 		self.disableMenuBg()
 		self.jadwalActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
 		self.tabWidget.setCurrentIndex(1)
 
 	def historyBtnAct(self):
+		#self.loadingAnim.setHidden(False)
 		self.disableMenuBg()
 		self.historyActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
 		self.tabWidget.setCurrentIndex(2)
 
 	def savedBtnAct(self):
+		self.loadingAnim.setHidden(False)
 		self.disableMenuBg()
 		self.savedActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
 		self.tabWidget.setCurrentIndex(3)
@@ -92,10 +96,11 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 	def savedBtnThread(self):
 		self.savedAnimeList.clear()
 		d = getSavedAnimeList()
-		[d.pop("eps") for d in d]
+		[d.pop("eps") for d in d if 'eps' in d]
 		results = ThreadPool(16).map(self.addThumbMultiThread, d)
 		for r in results:
 			self.savedAnimeList.addItem(r)
+		self.loadingAnim.setHidden(True)
 
 
 	def getLatest(self):
@@ -414,7 +419,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			self.StreamingBtn.setEnabled(False)
 		self.downloadURL.setPlainText(targeturl)
 
-	def doStreaming(self, data):
+	def doStreaming(self):
 		self.disabledAll()
 		iswork, comment = checkMpvWorking()
 		if not iswork:
