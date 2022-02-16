@@ -37,6 +37,10 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.loadingAnim.setMovie(animated_spinner)
 		animated_spinner.start()
 
+		self.AnimeList.verticalScrollBar().setSingleStep(30)
+		self.historyAnimeList.verticalScrollBar().setSingleStep(30)
+		self.savedAnimeList.verticalScrollBar().setSingleStep(30)
+
 		t = threading.Thread(target=self.getLatest)
 		t.start()
 		self.AnimeList.doubleClicked.connect(lambda: self.info(self.AnimeList))
