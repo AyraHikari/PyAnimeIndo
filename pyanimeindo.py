@@ -510,7 +510,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		if settings.get("mpv_path"):
 			mpv_cmd = settings['mpv_path']
 
-		p = subp.Popen(mpv_cmd + " " + url, shell=True)
+		p = subp.Popen("\"" + mpv_cmd + "\" -V " + url, shell=True)
 		while p.poll() is None:
 			time.sleep(1)
 
