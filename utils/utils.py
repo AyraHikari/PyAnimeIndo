@@ -114,3 +114,42 @@ def checkMpvWorking():
 		return 0, "MPV tidak ditemukan!\nKalian bisa install MPV atau atur path kustom MPV diatas"
 	else:
 		return 0, "MPV ditemukan, tapi gagal!\n\n" + str(err)
+
+def setPresetMPV(preset):
+	preset_data = []
+	if preset == "Off":
+		preset_data = ["off"]
+	elif preset == "Mode A (HQ)":
+		preset_data = ["~~/shaders/Anime4K_Clamp_Highlights.glsl", "~~/shaders/Anime4K_Restore_CNN_M.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_M.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x2.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x4.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_S.glsl"]
+	elif preset == "Mode B (HQ)":
+		preset_data = ["~~/shaders/Anime4K_Clamp_Highlights.glsl", "~~/shaders/Anime4K_Restore_CNN_Soft_M.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_M.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x2.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x4.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_S.glsl"]
+	elif preset == "Mode C (HQ)":
+		preset_data = ["~~/shaders/Anime4K_Clamp_Highlights.glsl", "~~/shaders/Anime4K_Upscale_Denoise_CNN_x2_M.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x2.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x4.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_S.glsl"]
+	elif preset == "Mode A+A (HQ)":
+		preset_data = ["~~/shaders/Anime4K_Clamp_Highlights.glsl", "~~/shaders/Anime4K_Restore_CNN_M.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_M.glsl", "~~/shaders/Anime4K_Restore_CNN_S.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x2.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x4.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_S.glsl"]
+	elif preset == "Mode B+B (HQ)":
+		preset_data = ["~~/shaders/Anime4K_Clamp_Highlights.glsl", "~~/shaders/Anime4K_Restore_CNN_Soft_M.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_M.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x2.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x4.glsl", "~~/shaders/Anime4K_Restore_CNN_Soft_S.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_S.glsl"]
+	elif preset == "Mode C+A (HQ)":
+		preset_data = ["~~/shaders/Anime4K_Clamp_Highlights.glsl", "~~/shaders/Anime4K_Upscale_Denoise_CNN_x2_M.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x2.glsl", "~~/shaders/Anime4K_AutoDownscalePre_x4.glsl", "~~/shaders/Anime4K_Restore_CNN_S.glsl", "~~/shaders/Anime4K_Upscale_CNN_x2_S.glsl"]
+
+	if preset_data:
+		if os.name == "nt":
+			r = "C:\\Users\\" + os.environ['USERNAME'] + "\\AppData\\Roaming\\mpv\\mpv.conf"
+		else:
+			r = f"/{os.getenv('HOME')}/.config/mpv/mpv.conf"
+		
+		with open(r) as mpv_conf:
+			rdata = ""
+			for line in mpv_conf:
+				if "glsl-shader" not in line:
+					rdata += line
+
+		if preset_data[0] != "off":
+			rdata += '\nglsl-shader="' + '"\nglsl-shader="'.join(preset_data)
+
+		if os.name == "nt":
+			w = open(r, "w")
+		else:
+			w = open(r, "w")
+		w.write(rdata)
+		w.close()

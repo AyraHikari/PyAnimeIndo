@@ -20,7 +20,7 @@ from API.animeindo import get_main, get_episodes, get_download, searchAnime, dow
 from API.zdl import zdl
 from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime, saveHistoryAnime
 from utils.opendialog import OpenDialogApp
-from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking, isWindows
+from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking, isWindows, setPresetMPV
 
 DEBUG = False
 settings = loadSettings()
@@ -432,6 +432,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 
 	def doStreaming(self):
 		self.disabledAll()
+		"""
 		iswork, comment = checkMpvWorking()
 		if not iswork:
 			alert = QMessageBox()
@@ -442,6 +443,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			dialog.show()
 			self.enabledAll()
 			return
+		"""
 		targeturl = self.getAnimeQuality()
 		dialog = Streaming(self)
 		dialog.setWindowModality(Qt.ApplicationModal)
@@ -450,6 +452,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		printd("Fetching: " + targeturl)
 		try:
 			zdirect = zdl(targeturl)
+			print(zdirect)
 			t = threading.Thread(target=self.start_mpv, name="MPV Player", args=(zdirect,dialog,))
 			t.start()
 		except Exception as err:
@@ -577,7 +580,10 @@ class Settings(QDialog, Ui_Settings):
 		print(mpvPath)
 
 		try:
-			process = subp.Popen([mpvPath, '-V'], stdout=subp.PIPE, stderr=subp.PIPE)
+			if "mpv" in mpvPath.lower():
+				process = subp.Popen([mpvPath, '-V'], stdout=subp.PIPE, stderr=subp.PIPE)
+			else:
+				process = subp.Popen([mpvPath], stdout=subp.PIPE, stderr=subp.PIPE)
 			out, err = process.communicate()
 		except FileNotFoundError:
 			out, err = ("", "FileNotFoundError")
@@ -664,6 +670,7 @@ class Settings(QDialog, Ui_Settings):
 		if self.HttpsProxy.text() != "":
 			data['https_proxy'] = self.HttpsProxy.text()
 
+		setPresetMPV(self.presetA4k.currentText())
 		isok = saveSettings(data)
 		alert = QMessageBox()
 		if isok:
