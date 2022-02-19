@@ -23,6 +23,11 @@ from utils.opendialog import OpenDialogApp
 from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking, isWindows
 
 DEBUG = False
+settings = loadSettings()
+if http := settings.get("http_proxy"):
+	os.environ["http_proxy"] = str(http)
+if https := settings.get("https_proxy"):
+	os.environ["https_proxy"] = str(https)
 
 
 class MainWindow(QMainWindow, Ui_AnimeIndo):
@@ -652,9 +657,10 @@ class Settings(QDialog, Ui_Settings):
 			data['mpv_path'] = self.mpvCustomPath.text()
 
 		# Proxy
-		#if self.mpvCustomPath.text() != "":
-		#	data['http_proxy'] = self.HttpProxy.text()
-		#	data['https_proxy'] = self.HttpsProxy.text()
+		if self.HttpProxy.text() != "":
+			data['http_proxy'] = self.HttpProxy.text()
+		if self.HttpsProxy.text() != "":
+			data['https_proxy'] = self.HttpsProxy.text()
 
 		isok = saveSettings(data)
 		alert = QMessageBox()
