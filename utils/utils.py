@@ -138,11 +138,14 @@ def setPresetMPV(preset):
 		else:
 			r = f"/{os.getenv('HOME')}/.config/mpv/mpv.conf"
 		
-		with open(r) as mpv_conf:
-			rdata = ""
-			for line in mpv_conf:
-				if "glsl-shader" not in line:
-					rdata += line
+		rdata = ""
+		try:
+			with open(r) as mpv_conf:
+				for line in mpv_conf:
+					if "glsl-shader" not in line:
+						rdata += line
+		except FileNotFoundError:
+			pass
 
 		if preset_data[0] != "off":
 			rdata += '\nglsl-shader="' + '"\nglsl-shader="'.join(preset_data)
