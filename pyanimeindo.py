@@ -452,7 +452,6 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		printd("Fetching: " + targeturl)
 		try:
 			zdirect = zdl(targeturl)
-			print(zdirect)
 			t = threading.Thread(target=self.start_mpv, name="MPV Player", args=(zdirect,dialog,))
 			t.start()
 		except Exception as err:
