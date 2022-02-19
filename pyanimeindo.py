@@ -116,9 +116,9 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.AnimeList.clear()
 		ongoing = get_main()
 		results = ThreadPool(16).map(self.addThumbMultiThread, ongoing)
-		self.loadingAnim.setHidden(True)
 		for r in results:
 			self.AnimeList.addItem(r)
+		self.loadingAnim.setHidden(True)
 		#for data in ongoing:
 			#self.addThumbThread(data)
 			#t = threading.Thread(target=self.addThumbThread, args=(data,))
@@ -172,6 +172,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 	def search(self, signalType, listData):
 		title = signalType.text()
 
+		self.loadingAnim.setHidden(False)
 		t = threading.Thread(target=self.searchThread, args=(title,listData,))
 		t.start()
 
@@ -181,6 +182,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		results = ThreadPool(16).map(self.addThumbMultiThread, lists)
 		for r in results:
 			listData.addItem(r)
+		self.loadingAnim.setHidden(True)
 
 	def about(self):
 		dialog = About(self)
