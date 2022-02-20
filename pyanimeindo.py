@@ -131,9 +131,9 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			d = getSavedAnimeList()
 			[d.pop("eps") for d in d if 'eps' in d]
 			results = ThreadPool(16).map(self.addThumbMultiThread, d)
+			self.loadingAnim.setHidden(True)
 			for r, _ in results:
 				self.savedAnimeList.addItem(r)
-			self.loadingAnim.setHidden(True)
 
 	def getLatest(self):
 		t = threading.Thread(target=self.getLatestThread)
@@ -158,11 +158,11 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		else:
 			ongoing = get_main()
 			results = ThreadPool(16).map(self.addThumbMultiThread, ongoing)
+			self.loadingAnim.setHidden(True)
 			for r, rawImg in results:
 				self.AnimeList.addItem(r)
 				t = threading.Thread(target=self.addJadwalList, args=(r, rawImg,))
 				t.start()
-			self.loadingAnim.setHidden(True)
 		#for data in ongoing:
 			#self.addThumbThread(data)
 			#t = threading.Thread(target=self.addThumbThread, args=(data,))
@@ -271,9 +271,9 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		else:
 			lists = searchAnime(title)
 			results = ThreadPool(16).map(self.addThumbMultiThread, lists)
+			self.loadingAnim.setHidden(True)
 			for r, _ in results:
 				listData.addItem(r)
-			self.loadingAnim.setHidden(True)
 
 	def about(self):
 		dialog = About(self)
