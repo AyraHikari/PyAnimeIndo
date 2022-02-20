@@ -7,7 +7,7 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import (
 	QApplication, QMainWindow, QDialog, QMessageBox, QFileDialog
 )
-from PyQt5.QtCore import Qt, QFile, QObject, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QFile, QObject, QThread, QSize, pyqtSignal
 from PyQt5.uic import loadUi
 
 from AnimeListWidget import Ui_AnimeIndo
@@ -52,6 +52,15 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.AnimeList.doubleClicked.connect(lambda: self.info(self.AnimeList))
 		self.historyAnimeList.doubleClicked.connect(lambda: self.info(self.historyAnimeList))
 		self.savedAnimeList.doubleClicked.connect(lambda: self.info(self.savedAnimeList))
+
+		# Jadwal
+		self.seninList.doubleClicked.connect(lambda: self.info(self.seninList))
+		self.selasaList.doubleClicked.connect(lambda: self.info(self.selasaList))
+		self.rabuList.doubleClicked.connect(lambda: self.info(self.rabuList))
+		self.kamisList.doubleClicked.connect(lambda: self.info(self.kamisList))
+		self.jumatList.doubleClicked.connect(lambda: self.info(self.jumatList))
+		self.sabtuList.doubleClicked.connect(lambda: self.info(self.sabtuList))
+		self.mingguList.doubleClicked.connect(lambda: self.info(self.mingguList))
 		
 		# Menu bar
 		self.latestBtn.clicked.connect(self.latestBtnAct)
@@ -108,7 +117,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		d = getSavedAnimeList()
 		[d.pop("eps") for d in d if 'eps' in d]
 		results = ThreadPool(16).map(self.addThumbMultiThread, d)
-		for r in results:
+		for r, _ in results:
 			self.savedAnimeList.addItem(r)
 		self.loadingAnim.setHidden(True)
 
@@ -124,15 +133,18 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			for r in ongoing:
 				if counter != self.AnimeList.count():
 					break
-				anime = self.addThumbMultiThread(r)
+				anime, rawImg = self.addThumbMultiThread(r)
 				self.AnimeList.addItem(anime)
+				t = threading.Thread(target=self.addJadwalList, args=(r, rawImg,))
+				t.start()
 				counter += 1
-			self.loadingAnim.setHidden(True)
 		else:
 			ongoing = get_main()
 			results = ThreadPool(16).map(self.addThumbMultiThread, ongoing)
-			for r in results:
+			for r, rawImg in results:
 				self.AnimeList.addItem(r)
+				t = threading.Thread(target=self.addJadwalList, args=(r, rawImg,))
+				t.start()
 			self.loadingAnim.setHidden(True)
 		#for data in ongoing:
 			#self.addThumbThread(data)
@@ -151,17 +163,53 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		anime.setFont(font)
 		return anime
 
-	def addThumbMultiThread(self, data):
+	def addThumbMultiThread(self, data, raw_image=None):
 		anime = QtWidgets.QListWidgetItem()
 		anime.setText(data['title'])
-		imageData = make_rounded(requests.get(data['img']).content, eps=data['eps'] if data.get('eps') else None)
+		rawImg = raw_image if raw_image else requests.get(data['img']).content
+		imageData = make_rounded(rawImg, eps=data['eps'] if data.get('eps') else None)
 		anime.setIcon(QtGui.QIcon(imageData))
 		anime.setStatusTip(data['url'])
 		anime.setWhatsThis(str(data))
 		font = QtGui.QFont()
 		font.setFamily("Segoe UI")
 		anime.setFont(font)
-		return anime
+		return anime, rawImg
+
+	def addJadwalList(self, widget, rawImg):
+		if type(widget) == dict:
+			data = widget
+		else:
+			data = eval(widget.whatsThis())
+		hari = data['hari']
+		if hari.lower() == "senin":
+			anime, _ = self.addThumbMultiThread(data, raw_image=rawImg)
+			self.seninList.addItem(anime)
+			self.seninList.setMinimumSize(QSize(0, 195*(1+int(self.seninList.count()/5))))
+		elif hari.lower() == "selasa":
+			anime, _ = self.addThumbMultiThread(data, raw_image=rawImg)
+			self.selasaList.addItem(anime)
+			self.selasaList.setMinimumSize(QSize(0, 195*(1+int(self.selasaList.count()/5))))
+		elif hari.lower() == "rabu":
+			anime, _ = self.addThumbMultiThread(data, raw_image=rawImg)
+			self.rabuList.addItem(anime)
+			self.rabuList.setMinimumSize(QSize(0, 195*(1+int(self.rabuList.count()/5))))
+		elif hari.lower() == "kamis":
+			anime, _ = self.addThumbMultiThread(data, raw_image=rawImg)
+			self.kamisList.addItem(anime)
+			self.kamisList.setMinimumSize(QSize(0, 195*(1+int(self.kamisList.count()/5))))
+		elif hari.lower() == "jumat":
+			anime, _ = self.addThumbMultiThread(data, raw_image=rawImg)
+			self.jumatList.addItem(anime)
+			self.jumatList.setMinimumSize(QSize(0, 195*(1+int(self.jumatList.count()/5))))
+		elif hari.lower() == "sabtu":
+			anime, _ = self.addThumbMultiThread(data, raw_image=rawImg)
+			self.sabtuList.addItem(anime)
+			self.sabtuList.setMinimumSize(QSize(0, 195*(1+int(self.sabtuList.count()/5))))
+		elif hari.lower() == "minggu":
+			anime, _ = self.addThumbMultiThread(data, raw_image=rawImg)
+			self.mingguList.addItem(anime)
+			self.mingguList.setMinimumSize(QSize(0, 195*(1+int(self.mingguList.count()/5))))
 		
 
 	def info(self, signalType):
@@ -200,14 +248,13 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			for r in lists:
 				if counter != self.AnimeList.count():
 					break
-				anime = self.addThumbMultiThread(r)
+				anime, _ = self.addThumbMultiThread(r)
 				counter += 1
 				self.AnimeList.addItem(anime)
-			self.loadingAnim.setHidden(True)
 		else:
 			lists = searchAnime(title)
 			results = ThreadPool(16).map(self.addThumbMultiThread, lists)
-			for r in results:
+			for r, _ in results:
 				listData.addItem(r)
 			self.loadingAnim.setHidden(True)
 
@@ -314,9 +361,19 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			self.totalEpisode.setText(f"1 - {totalEps} Episodes")
 
 		self.recommendList.clear()
-		results = ThreadPool(5).map(self.setRecommendedList, data['recommend'])
-		for r in results:
-			self.recommendList.addItem(r)
+		settings = loadSettings()
+		counter = 0
+		if eval(settings['slow_mode']):
+			for r in data['recommend']:
+				if counter != self.recommendList.count():
+					break
+				anime = self.setRecommendedList(r)
+				counter += 1
+				self.recommendList.addItem(anime)
+		else:
+			results = ThreadPool(5).map(self.setRecommendedList, data['recommend'])
+			for r in results:
+				self.recommendList.addItem(r)
 
 		self.AnimeEps.setEnabled(True)
 

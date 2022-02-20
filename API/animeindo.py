@@ -129,8 +129,9 @@ def get_main():
 		title = anime.find('h2', {"class": "jdlflm"}).text
 		eps = anime.find('div', {"class": "epz"}).text
 		img = anime.find('img')['src']
+		hari = anime.find('div', {"class": "epztipe"}).text.strip()
 		url = anime.find('a')['href']
-		ret.append({"title": title, "eps": eps, "img": img, "url": url})
+		ret.append({"title": title, "eps": eps, "img": img, "hari": hari, "url": url})
 
 	# pages loop max 10 pages
 	for page in range(10):
@@ -145,8 +146,9 @@ def get_main():
 				title = anime.find('h2', {"class": "jdlflm"}).text
 				eps = anime.find('div', {"class": "epz"}).text
 				img = anime.find('img')['src']
+				hari = anime.find('div', {"class": "epztipe"}).text.strip()
 				url = anime.find('a')['href']
-				ret.append({"title": title, "eps": eps, "img": img, "url": url})
+				ret.append({"title": title, "eps": eps, "img": img, "hari": hari, "url": url})
 		else:
 			break
 
