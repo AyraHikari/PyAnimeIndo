@@ -23,6 +23,7 @@ from utils.opendialog import OpenDialogApp
 from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking, isWindows, setPresetMPV
 
 DEBUG = False
+APP_STATE = 1
 settings = loadSettings()
 if http := settings.get("http_proxy"):
 	os.environ["http_proxy"] = str(http)
@@ -60,7 +61,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.settingsBtn.clicked.connect(self.settings)
 
 		# Others
-		self.searchBar.editingFinished.connect(lambda: self.search(self.searchBar, self.AnimeList))
+		self.searchBar.returnPressed.connect(lambda: self.search(self.searchBar, self.AnimeList))
 
 		stream = QFile(":/images/ayra.jpg")
 		if stream.open(QFile.ReadOnly):
@@ -114,29 +115,41 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 
 	def getLatest(self):
 		self.AnimeList.clear()
-		ongoing = get_main()
-		results = ThreadPool(16).map(self.addThumbMultiThread, ongoing)
-		for r in results:
-			self.AnimeList.addItem(r)
-		self.loadingAnim.setHidden(True)
+		settings = loadSettings()
+		counter = 0
+		if eval(settings['slow_mode']):
+			self.loadingAnim.setHidden(True)
+			ongoing = get_main()
+			self.AnimeList.clear()
+			for r in ongoing:
+				if counter != self.AnimeList.count():
+					break
+				anime = self.addThumbMultiThread(r)
+				self.AnimeList.addItem(anime)
+				counter += 1
+			self.loadingAnim.setHidden(True)
+		else:
+			ongoing = get_main()
+			results = ThreadPool(16).map(self.addThumbMultiThread, ongoing)
+			for r in results:
+				self.AnimeList.addItem(r)
+			self.loadingAnim.setHidden(True)
 		#for data in ongoing:
 			#self.addThumbThread(data)
 			#t = threading.Thread(target=self.addThumbThread, args=(data,))
 			#t.start()
 
-	def addThumbThread(self, data, is_search=False):
+	def addThumbThread(self, data):
 		anime = QtWidgets.QListWidgetItem()
 		anime.setText(data['title'])
-		imageData = make_rounded(requests.get(data['img']).content)
+		imageData = make_rounded(requests.get(data['img']).content, eps=data['eps'] if data.get('eps') else None)
 		anime.setIcon(QtGui.QIcon(imageData))
 		anime.setStatusTip(data['url'])
+		anime.setWhatsThis(str(data))
 		font = QtGui.QFont()
 		font.setFamily("Segoe UI")
 		anime.setFont(font)
-		if is_search:
-			self.AnimeList_Search.addItem(anime)
-		else:
-			self.AnimeList.addItem(anime)
+		return anime
 
 	def addThumbMultiThread(self, data):
 		anime = QtWidgets.QListWidgetItem()
@@ -178,11 +191,25 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 
 	def searchThread(self, title, listData):
 		listData.clear()
-		lists = searchAnime(title)
-		results = ThreadPool(16).map(self.addThumbMultiThread, lists)
-		for r in results:
-			listData.addItem(r)
-		self.loadingAnim.setHidden(True)
+		settings = loadSettings()
+		counter = 0
+		if eval(settings['slow_mode']):
+			self.loadingAnim.setHidden(True)
+			lists = searchAnime(title)
+			self.AnimeList.clear()
+			for r in lists:
+				if counter != self.AnimeList.count():
+					break
+				anime = self.addThumbMultiThread(r)
+				counter += 1
+				self.AnimeList.addItem(anime)
+			self.loadingAnim.setHidden(True)
+		else:
+			lists = searchAnime(title)
+			results = ThreadPool(16).map(self.addThumbMultiThread, lists)
+			for r in results:
+				listData.addItem(r)
+			self.loadingAnim.setHidden(True)
 
 	def about(self):
 		dialog = About(self)
@@ -193,6 +220,10 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		dialog = Settings(self)
 		dialog.setWindowModality(Qt.ApplicationModal)
 		dialog.show()
+
+	def closeEvent(self, event):
+		global APP_STATE
+		APP_STATE = 0
 
 
 class AnimeInfo(QDialog, Ui_AnimeInfo):
@@ -562,6 +593,9 @@ class Settings(QDialog, Ui_Settings):
 		if settings.get("https_proxy"):
 			self.HttpsProxy.setText(settings['https_proxy'])
 
+		if settings.get("slow_mode"):
+			self.slowMode.setChecked(eval(settings['slow_mode']))
+
 		self.testMPV.clicked.connect(self.testVideoPlayer)
 		self.ProxyTest.clicked.connect(self.testProxy)
 		self.mpvBrowse.clicked.connect(self.browseMPV)
@@ -669,6 +703,8 @@ class Settings(QDialog, Ui_Settings):
 		if self.HttpsProxy.text() != "":
 			data['https_proxy'] = self.HttpsProxy.text()
 
+		data['slow_mode'] = self.slowMode.isChecked()
+
 		setPresetMPV(self.presetA4k.currentText())
 		isok = saveSettings(data)
 		alert = QMessageBox()
@@ -683,6 +719,14 @@ class Streaming(QDialog, Ui_Streaming):
 		self.setupUi(self)
 
 
+def exitState():
+	while APP_STATE:
+		time.sleep(1)
+	printd("Exit...")
+	os._exit(0)
+
+t = threading.Thread(target=exitState)
+t.start()
 
 
 

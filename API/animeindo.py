@@ -132,6 +132,24 @@ def get_main():
 		url = anime.find('a')['href']
 		ret.append({"title": title, "eps": eps, "img": img, "url": url})
 
+	# pages loop max 10 pages
+	for page in range(10):
+		if page <= 1:
+			continue
+		url = "https://otakudesu.pro/ongoing-anime/page/" + str(page)
+		data = BeautifulSoup(requests.get(url).text, features="html.parser")
+
+		animelists = data.find('div', {'class': 'venz'})
+		if animelists and animelists.findAll("li"):
+			for anime in animelists.findAll("li"):
+				title = anime.find('h2', {"class": "jdlflm"}).text
+				eps = anime.find('div', {"class": "epz"}).text
+				img = anime.find('img')['src']
+				url = anime.find('a')['href']
+				ret.append({"title": title, "eps": eps, "img": img, "url": url})
+		else:
+			break
+
 	return ret
 
 def get_episodes(url):
