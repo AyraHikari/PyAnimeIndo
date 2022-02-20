@@ -114,12 +114,25 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 
 	def savedBtnThread(self):
 		self.savedAnimeList.clear()
-		d = getSavedAnimeList()
-		[d.pop("eps") for d in d if 'eps' in d]
-		results = ThreadPool(16).map(self.addThumbMultiThread, d)
-		for r, _ in results:
-			self.savedAnimeList.addItem(r)
-		self.loadingAnim.setHidden(True)
+		settings = loadSettings()
+		counter = 0
+		if eval(settings['slow_mode']):
+			self.loadingAnim.setHidden(True)
+			d = getSavedAnimeList()
+			self.savedAnimeList.clear()
+			for r in d:
+				if counter != self.savedAnimeList.count():
+					break
+				anime, _ = self.addThumbMultiThread(r)
+				self.savedAnimeList.addItem(anime)
+				counter += 1
+		else:
+			d = getSavedAnimeList()
+			[d.pop("eps") for d in d if 'eps' in d]
+			results = ThreadPool(16).map(self.addThumbMultiThread, d)
+			for r, _ in results:
+				self.savedAnimeList.addItem(r)
+			self.loadingAnim.setHidden(True)
 
 
 	def getLatest(self):
