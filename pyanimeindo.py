@@ -47,7 +47,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.historyAnimeList.verticalScrollBar().setSingleStep(30)
 		self.savedAnimeList.verticalScrollBar().setSingleStep(30)
 
-		t = threading.Thread(target=self.getLatest)
+		t = threading.Thread(target=self.getLatestThread)
 		t.start()
 		self.AnimeList.doubleClicked.connect(lambda: self.info(self.AnimeList))
 		self.historyAnimeList.doubleClicked.connect(lambda: self.info(self.historyAnimeList))
@@ -71,6 +71,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 
 		# Others
 		self.searchBar.returnPressed.connect(lambda: self.search(self.searchBar, self.AnimeList))
+		self.titleTab.clicked.connect(self.getLatest)
 
 		stream = QFile(":/images/ayra.jpg")
 		if stream.open(QFile.ReadOnly):
@@ -134,8 +135,11 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 				self.savedAnimeList.addItem(r)
 			self.loadingAnim.setHidden(True)
 
-
 	def getLatest(self):
+		t = threading.Thread(target=self.getLatestThread)
+		t.start()
+
+	def getLatestThread(self):
 		self.AnimeList.clear()
 		settings = loadSettings()
 		counter = 0
