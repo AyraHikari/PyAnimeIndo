@@ -16,7 +16,7 @@ from About import Ui_Dialog as Ui_About
 from Settings import Ui_Dialog as Ui_Settings
 from Streaming import Ui_Form as Ui_Streaming
 
-from API.animeindo import get_episodes, get_download, searchAnime, downloadAnime4K, writeLowA4K, writeHighA4K, uninstallA4kdir
+from API.anime4k import downloadAnime4K, writeLowA4K, writeHighA4K, uninstallA4kdir
 from API.otakudesu import *
 from API.zdl import zdl
 from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime, saveHistoryAnime, getHistoryAnime, getHistoryAnimeList
@@ -424,7 +424,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 	def loadURL(self, urlData, strdata=None):
 		# Get Anime
 		printd("Fetching: " + urlData)
-		data = get_episodes(urlData)
+		data = getEpisodes(urlData)
 		self.setStatusTip(strdata)
 
 		image = QtGui.QPixmap()
@@ -600,7 +600,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		self.disabledAll()
 		targeturl = data.statusTip()
 		printd("Fetching: " + targeturl)
-		webdata = get_download(targeturl)
+		webdata = getDownload(targeturl)
 
 		# Parse quality
 		isFirst = False

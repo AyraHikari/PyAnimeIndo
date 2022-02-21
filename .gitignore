@@ -6,3 +6,4 @@ config.ini
 data.json
 AnimeInfoWidgetOld.py
 *.qrc
+API/animeindo.py
