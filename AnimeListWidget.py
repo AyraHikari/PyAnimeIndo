@@ -46,7 +46,7 @@ class Ui_AnimeIndo(object):
         self.profileName.setStyleSheet("background-color: #00000000;")
         self.profileName.setObjectName("profileName")
         self.menuBg = QtWidgets.QLabel(self.centralwidget)
-        self.menuBg.setGeometry(QtCore.QRect(30, 130, 191, 301))
+        self.menuBg.setGeometry(QtCore.QRect(30, 130, 191, 361))
         self.menuBg.setStyleSheet("border-radius: 12px;\n"
 "padding-left: 10px;\n"
 "padding-right: 10px;\n"
@@ -111,13 +111,13 @@ class Ui_AnimeIndo(object):
         self.border2.setFrameShape(QtWidgets.QFrame.HLine)
         self.border2.setObjectName("border2")
         self.historyIcon = QtWidgets.QLabel(self.centralwidget)
-        self.historyIcon.setGeometry(QtCore.QRect(50, 267, 24, 24))
+        self.historyIcon.setGeometry(QtCore.QRect(50, 328, 24, 24))
         self.historyIcon.setStyleSheet("background-color: #00000000;")
         self.historyIcon.setPixmap(QtGui.QPixmap(":/icons/img/collection.svg"))
         self.historyIcon.setScaledContents(True)
         self.historyIcon.setObjectName("historyIcon")
         self.historyLabel = QtWidgets.QLabel(self.centralwidget)
-        self.historyLabel.setGeometry(QtCore.QRect(90, 267, 111, 21))
+        self.historyLabel.setGeometry(QtCore.QRect(90, 328, 111, 21))
         font = QtGui.QFont()
         font.setFamily("Roboto")
         font.setPointSize(10)
@@ -134,7 +134,7 @@ class Ui_AnimeIndo(object):
         self.border3.setFrameShape(QtWidgets.QFrame.HLine)
         self.border3.setObjectName("border3")
         self.savedLabel = QtWidgets.QLabel(self.centralwidget)
-        self.savedLabel.setGeometry(QtCore.QRect(90, 327, 111, 21))
+        self.savedLabel.setGeometry(QtCore.QRect(90, 388, 111, 21))
         font = QtGui.QFont()
         font.setFamily("Roboto")
         font.setPointSize(10)
@@ -151,13 +151,13 @@ class Ui_AnimeIndo(object):
         self.border4.setFrameShape(QtWidgets.QFrame.HLine)
         self.border4.setObjectName("border4")
         self.savedIcon = QtWidgets.QLabel(self.centralwidget)
-        self.savedIcon.setGeometry(QtCore.QRect(50, 327, 24, 24))
+        self.savedIcon.setGeometry(QtCore.QRect(50, 388, 24, 24))
         self.savedIcon.setStyleSheet("background-color: #00000000;")
         self.savedIcon.setPixmap(QtGui.QPixmap(":/icons/img/bookmark.svg"))
         self.savedIcon.setScaledContents(True)
         self.savedIcon.setObjectName("savedIcon")
         self.settingsLabel = QtWidgets.QLabel(self.centralwidget)
-        self.settingsLabel.setGeometry(QtCore.QRect(90, 387, 111, 21))
+        self.settingsLabel.setGeometry(QtCore.QRect(90, 448, 111, 21))
         font = QtGui.QFont()
         font.setFamily("Roboto")
         font.setPointSize(10)
@@ -167,7 +167,7 @@ class Ui_AnimeIndo(object):
         self.settingsLabel.setStyleSheet("background-color: #00000000;")
         self.settingsLabel.setObjectName("settingsLabel")
         self.settingsIcon = QtWidgets.QLabel(self.centralwidget)
-        self.settingsIcon.setGeometry(QtCore.QRect(50, 387, 24, 24))
+        self.settingsIcon.setGeometry(QtCore.QRect(50, 448, 24, 24))
         self.settingsIcon.setStyleSheet("background-color: #00000000;")
         self.settingsIcon.setPixmap(QtGui.QPixmap(":/icons/img/cog.svg"))
         self.settingsIcon.setScaledContents(True)
@@ -184,7 +184,7 @@ class Ui_AnimeIndo(object):
         self.jadwalActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
         self.jadwalActive.setObjectName("jadwalActive")
         self.historyActive = QtWidgets.QLabel(self.centralwidget)
-        self.historyActive.setGeometry(QtCore.QRect(42, 258, 41, 41))
+        self.historyActive.setGeometry(QtCore.QRect(42, 318, 41, 41))
         self.historyActive.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.historyActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
         self.historyActive.setObjectName("historyActive")
@@ -549,6 +549,109 @@ class Ui_AnimeIndo(object):
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.tabWidget.addTab(self.tab_2, "")
+        self.tab_5 = QtWidgets.QWidget()
+        self.tab_5.setObjectName("tab_5")
+        self.titleTab_5 = QtWidgets.QLabel(self.tab_5)
+        self.titleTab_5.setGeometry(QtCore.QRect(25, 30, 211, 30))
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.titleTab_5.setFont(font)
+        self.titleTab_5.setStyleSheet("background-color: #00000000;")
+        self.titleTab_5.setObjectName("titleTab_5")
+        self.scrollArea_2 = QtWidgets.QScrollArea(self.tab_5)
+        self.scrollArea_2.setGeometry(QtCore.QRect(10, 70, 671, 71))
+        self.scrollArea_2.setStyleSheet("QScrollBar:horizontal {\n"
+"height:12px;\n"
+"}\n"
+"\n"
+"QScrollBar:page:horizontal {\n"
+"            border: 0px solid #999999;\n"
+"            background-color: rgb(34, 35, 52);\n"
+"            width:15px;\n"
+"            margin: 0px 0px 0px 3px;\n"
+"        }\n"
+"        QScrollBar::handle:page:horizontal {         \n"
+"            min-height: 0px;\n"
+"            border: 0px solid red;\n"
+"            border-radius: 5px;\n"
+"            background-color: rgb(92, 95, 141);\n"
+"        }\n"
+"        QScrollBar::add-line:horizontal {       \n"
+"            height: 0px;\n"
+"            subcontrol-position: bottom;\n"
+"            subcontrol-origin: margin;\n"
+"        }\n"
+"        QScrollBar::sub-line:horizontal {\n"
+"            height: 0 px;\n"
+"            subcontrol-position: top;\n"
+"            subcontrol-origin: margin;\n"
+"        }\n"
+"")
+        self.scrollArea_2.setWidgetResizable(True)
+        self.scrollArea_2.setObjectName("scrollArea_2")
+        self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 671, 71))
+        self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout(self.scrollAreaWidgetContents_2)
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.genreTabData = QtWidgets.QTabWidget(self.scrollAreaWidgetContents_2)
+        self.genreTabData.setMinimumSize(QtCore.QSize(0, 40))
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.genreTabData.setFont(font)
+        self.genreTabData.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.genreTabData.setStyleSheet("QTabWidget::tab-bar {\n"
+"   border: 1px solid gray;\n"
+"}\n"
+"\n"
+"QTabBar::tab {\n"
+"  height: 20px; width: 100px;\n"
+"  background: #EFF4F8;\n"
+"  color: black;\n"
+"  padding: 10px;\n"
+"  border-radius: 15px;\n"
+"  margin-left:10px;\n"
+"  margin-right:10px;\n"
+" }\n"
+"\n"
+" QTabBar::tab:selected {\n"
+"  background: #c3daf5;\n"
+" }\n"
+"\n"
+"QTabWidget::pane { \n"
+"   border: none;\n"
+"}\n"
+"")
+        self.genreTabData.setUsesScrollButtons(False)
+        self.genreTabData.setObjectName("genreTabData")
+        self.tab_6 = QtWidgets.QWidget()
+        self.tab_6.setObjectName("tab_6")
+        self.genreTabData.addTab(self.tab_6, "")
+        self.horizontalLayout_9.addWidget(self.genreTabData)
+        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
+        self.genreAnimeList = QtWidgets.QListWidget(self.tab_5)
+        self.genreAnimeList.setGeometry(QtCore.QRect(10, 150, 671, 551))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.genreAnimeList.setFont(font)
+        self.genreAnimeList.setStyleSheet("border-radius: 0px;")
+        self.genreAnimeList.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.genreAnimeList.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.genreAnimeList.setIconSize(QtCore.QSize(120, 165))
+        self.genreAnimeList.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.genreAnimeList.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.genreAnimeList.setFlow(QtWidgets.QListView.LeftToRight)
+        self.genreAnimeList.setProperty("isWrapping", True)
+        self.genreAnimeList.setGridSize(QtCore.QSize(132, 200))
+        self.genreAnimeList.setViewMode(QtWidgets.QListView.IconMode)
+        self.genreAnimeList.setObjectName("genreAnimeList")
+        self.tabWidget.addTab(self.tab_5, "")
         self.tab_3 = QtWidgets.QWidget()
         self.tab_3.setObjectName("tab_3")
         self.titleTab_3 = QtWidgets.QLabel(self.tab_3)
@@ -612,29 +715,62 @@ class Ui_AnimeIndo(object):
         self.savedAnimeList.setObjectName("savedAnimeList")
         self.tabWidget.addTab(self.tab_4, "")
         self.savedActive = QtWidgets.QLabel(self.centralwidget)
-        self.savedActive.setGeometry(QtCore.QRect(41, 320, 41, 41))
+        self.savedActive.setGeometry(QtCore.QRect(41, 378, 41, 41))
         self.savedActive.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.savedActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
         self.savedActive.setObjectName("savedActive")
         self.historyBtn = QtWidgets.QPushButton(self.centralwidget)
-        self.historyBtn.setGeometry(QtCore.QRect(30, 248, 191, 61))
+        self.historyBtn.setGeometry(QtCore.QRect(30, 308, 191, 61))
         self.historyBtn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.historyBtn.setStyleSheet("background-color: #00000000;")
         self.historyBtn.setObjectName("historyBtn")
         self.savedBtn = QtWidgets.QPushButton(self.centralwidget)
-        self.savedBtn.setGeometry(QtCore.QRect(30, 308, 191, 61))
+        self.savedBtn.setGeometry(QtCore.QRect(30, 368, 191, 61))
         self.savedBtn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.savedBtn.setStyleSheet("background-color: #00000000;")
         self.savedBtn.setObjectName("savedBtn")
         self.settingsBtn = QtWidgets.QPushButton(self.centralwidget)
-        self.settingsBtn.setGeometry(QtCore.QRect(30, 368, 191, 61))
+        self.settingsBtn.setGeometry(QtCore.QRect(30, 428, 191, 61))
         self.settingsBtn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.settingsBtn.setStyleSheet("background-color: #00000000;")
         self.settingsBtn.setObjectName("settingsBtn")
         self.loadingAnim = QtWidgets.QLabel(self.centralwidget)
-        self.loadingAnim.setGeometry(QtCore.QRect(560, 300, 80, 80))
+        self.loadingAnim.setGeometry(QtCore.QRect(440, 10, 35, 35))
         self.loadingAnim.setScaledContents(True)
         self.loadingAnim.setObjectName("loadingAnim")
+        self.genreActive = QtWidgets.QLabel(self.centralwidget)
+        self.genreActive.setGeometry(QtCore.QRect(42, 258, 41, 41))
+        self.genreActive.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.genreActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
+        self.genreActive.setObjectName("genreActive")
+        self.genreBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.genreBtn.setGeometry(QtCore.QRect(30, 248, 191, 61))
+        self.genreBtn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.genreBtn.setStyleSheet("background-color: #00000000;")
+        self.genreBtn.setObjectName("genreBtn")
+        self.genreLabel = QtWidgets.QLabel(self.centralwidget)
+        self.genreLabel.setGeometry(QtCore.QRect(90, 268, 111, 21))
+        font = QtGui.QFont()
+        font.setFamily("Roboto")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.genreLabel.setFont(font)
+        self.genreLabel.setStyleSheet("background-color: #00000000;")
+        self.genreLabel.setObjectName("genreLabel")
+        self.genreIcon = QtWidgets.QLabel(self.centralwidget)
+        self.genreIcon.setGeometry(QtCore.QRect(50, 268, 24, 24))
+        self.genreIcon.setStyleSheet("background-color: #00000000;")
+        self.genreIcon.setPixmap(QtGui.QPixmap(":/icons/img/tags.svg"))
+        self.genreIcon.setScaledContents(True)
+        self.genreIcon.setObjectName("genreIcon")
+        self.border5 = QtWidgets.QFrame(self.centralwidget)
+        self.border5.setGeometry(QtCore.QRect(30, 420, 191, 16))
+        self.border5.setStyleSheet("background-color: #00000000;\n"
+"color: rgb(220, 220, 220);")
+        self.border5.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.border5.setFrameShape(QtWidgets.QFrame.HLine)
+        self.border5.setObjectName("border5")
         self.sidebarBg.raise_()
         self.menuBg.raise_()
         self.savedActive.raise_()
@@ -665,6 +801,11 @@ class Ui_AnimeIndo(object):
         self.savedBtn.raise_()
         self.settingsBtn.raise_()
         self.loadingAnim.raise_()
+        self.genreActive.raise_()
+        self.genreLabel.raise_()
+        self.genreIcon.raise_()
+        self.border5.raise_()
+        self.genreBtn.raise_()
         AnimeIndo.setCentralWidget(self.centralwidget)
         self.actionExit = QtWidgets.QAction(AnimeIndo)
         self.actionExit.setObjectName("actionExit")
@@ -673,6 +814,7 @@ class Ui_AnimeIndo(object):
 
         self.retranslateUi(AnimeIndo)
         self.tabWidget.setCurrentIndex(0)
+        self.genreTabData.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(AnimeIndo)
 
     def retranslateUi(self, AnimeIndo):
@@ -697,6 +839,9 @@ class Ui_AnimeIndo(object):
         self.label_4.setText(_translate("AnimeIndo", "Sabtu"))
         self.label_3.setText(_translate("AnimeIndo", "Minggu"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("AnimeIndo", "2"))
+        self.titleTab_5.setText(_translate("AnimeIndo", "Genre"))
+        self.genreTabData.setTabText(self.genreTabData.indexOf(self.tab_6), _translate("AnimeIndo", "None"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("AnimeIndo", "3"))
         self.titleTab_3.setText(_translate("AnimeIndo", "Riwayat Nonton"))
         self.historyAnimeList.setSortingEnabled(False)
         self.searchBar_2.setPlaceholderText(_translate("AnimeIndo", "Cari riwayat nonton kamu"))
@@ -704,6 +849,7 @@ class Ui_AnimeIndo(object):
         self.titleTab_4.setText(_translate("AnimeIndo", "Anime Tersimpan"))
         self.savedAnimeList.setSortingEnabled(False)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("AnimeIndo", "4"))
+        self.genreLabel.setText(_translate("AnimeIndo", "Genre"))
         self.actionExit.setText(_translate("AnimeIndo", "Exit"))
         self.actionPengaturan.setText(_translate("AnimeIndo", "Pengaturan"))
 import resources_rc

@@ -7,7 +7,7 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import (
 	QApplication, QMainWindow, QDialog, QMessageBox, QFileDialog
 )
-from PyQt5.QtCore import Qt, QFile, QObject, QThread, QSize, pyqtSignal
+from PyQt5.QtCore import Qt, QEvent, QFile, QObject, QThread, QSize, pyqtSignal
 from PyQt5.uic import loadUi
 
 from AnimeListWidget import Ui_AnimeIndo
@@ -16,7 +16,8 @@ from About import Ui_Dialog as Ui_About
 from Settings import Ui_Dialog as Ui_Settings
 from Streaming import Ui_Form as Ui_Streaming
 
-from API.animeindo import get_main, get_episodes, get_download, searchAnime, downloadAnime4K, writeLowA4K, writeHighA4K, uninstallA4kdir
+from API.animeindo import get_episodes, get_download, searchAnime, downloadAnime4K, writeLowA4K, writeHighA4K, uninstallA4kdir
+from API.otakudesu import *
 from API.zdl import zdl
 from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime, saveHistoryAnime, getHistoryAnime, getHistoryAnimeList
 from utils.opendialog import OpenDialogApp
@@ -32,8 +33,6 @@ if https := settings.get("https_proxy"):
 
 
 class MainWindow(QMainWindow, Ui_AnimeIndo):
-	dataLatest = {}
-
 	def __init__(self, parent=None):
 		super().__init__(parent)
 		self.setupUi(self)
@@ -46,12 +45,14 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.AnimeList.verticalScrollBar().setSingleStep(30)
 		self.historyAnimeList.verticalScrollBar().setSingleStep(30)
 		self.savedAnimeList.verticalScrollBar().setSingleStep(30)
+		self.genreAnimeList.verticalScrollBar().setSingleStep(30)
 
 		t = threading.Thread(target=self.getLatestThread)
 		t.start()
 		self.AnimeList.doubleClicked.connect(lambda: self.info(self.AnimeList))
 		self.historyAnimeList.doubleClicked.connect(lambda: self.info(self.historyAnimeList))
 		self.savedAnimeList.doubleClicked.connect(lambda: self.info(self.savedAnimeList))
+		self.genreAnimeList.doubleClicked.connect(lambda: self.info(self.genreAnimeList))
 
 		# Jadwal
 		self.seninList.doubleClicked.connect(lambda: self.info(self.seninList))
@@ -65,11 +66,13 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		# Menu bar
 		self.latestBtn.clicked.connect(self.latestBtnAct)
 		self.jadwalBtn.clicked.connect(self.jadwalBtnAct)
+		self.genreBtn.clicked.connect(self.genreBtnAct)
 		self.historyBtn.clicked.connect(self.historyBtnAct)
 		self.savedBtn.clicked.connect(self.savedBtnAct)
 		self.settingsBtn.clicked.connect(self.settings)
 
 		# Others
+		self.genreTabData.currentChanged.connect(lambda: self.fetchGenre(self.genreTabData.currentIndex()))
 		self.searchBar.returnPressed.connect(lambda: self.search(self.searchBar, self.AnimeList))
 		self.titleTab.clicked.connect(self.getLatest)
 
@@ -78,11 +81,39 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			profilePic = stream.readAll()
 			stream.close()
 			self.profilePic.setPixmap(make_rounded_res(profilePic, is_bytes=True))
-		#self.settingsIcon.setPixmap(svg_color("C:/Users/tedyr/Documents/Workspace/Python/PyAnimeIndo/UI/img/gear.svg", color='#3F51B5'))
+
+		# Scroll listener
+		self.AnimeList.installEventFilter(self)
+		self.genreAnimeList.installEventFilter(self)
+		self.genreTabData.tabBar().installEventFilter(self)
+
+		self.fetchGenreList()
+
+	def eventFilter(self, obj, event):
+		# Main list pages
+		if obj is self.AnimeList and event.type() == QEvent.Wheel:
+			if self.AnimeList.verticalScrollBar().value() == self.AnimeList.verticalScrollBar().maximum() and not self.loadingAnim.isVisible() and self.AnimeList.whatsThis() and int(self.AnimeList.whatsThis()):
+				self.loadingAnim.setHidden(False)
+				t = threading.Thread(target=self.getLatestThread, args=(int(self.AnimeList.whatsThis())+1,))
+				t.start()
+
+		# Genre categories
+		if obj is self.genreTabData.tabBar() and event.type() == QEvent.Wheel:
+			self.scrollArea_2.horizontalScrollBar().setValue(self.scrollArea_2.horizontalScrollBar().value() + -event.angleDelta().y())
+			return True
+
+		# Genre pages
+		if obj is self.genreAnimeList and event.type() == QEvent.Wheel:
+			if self.genreAnimeList.verticalScrollBar().value() == self.genreAnimeList.verticalScrollBar().maximum() and not self.loadingAnim.isVisible():
+				self.loadingAnim.setHidden(False)
+				t = threading.Thread(target=self.fetchGenreThread, args=(self.genreTabData.currentIndex(), True,))
+				t.start()
+		return super(MainWindow, self).eventFilter(obj, event)
 
 	def disableMenuBg(self):
 		self.latestActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
 		self.jadwalActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
+		self.genreActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
 		self.historyActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
 		self.savedActive.setStyleSheet("background-color: #00000000;border-radius: 12px;")
 
@@ -98,11 +129,17 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.jadwalActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
 		self.tabWidget.setCurrentIndex(1)
 
+	def genreBtnAct(self):
+		#self.loadingAnim.setHidden(False)
+		self.disableMenuBg()
+		self.genreActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
+		self.tabWidget.setCurrentIndex(2)
+
 	def historyBtnAct(self):
 		self.loadingAnim.setHidden(False)
 		self.disableMenuBg()
 		self.historyActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
-		self.tabWidget.setCurrentIndex(2)
+		self.tabWidget.setCurrentIndex(3)
 
 		t = threading.Thread(target=self.historyBtnThread)
 		t.start()
@@ -111,7 +148,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.loadingAnim.setHidden(False)
 		self.disableMenuBg()
 		self.savedActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
-		self.tabWidget.setCurrentIndex(3)
+		self.tabWidget.setCurrentIndex(4)
 
 		t = threading.Thread(target=self.savedBtnThread)
 		t.start()
@@ -162,18 +199,66 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			for r, _ in results:
 				self.historyAnimeList.addItem(r)
 
+	def fetchGenre(self, genre):
+		t = threading.Thread(target=self.fetchGenreThread, args=(genre,))
+		t.start()
+
+	def fetchGenreList(self):
+		self.genreTabData.clear()
+		genres = getGenreList()
+		for g in genres:
+			tab = QtWidgets.QWidget()
+			tab.setWhatsThis(genres[g])
+			self.genreTabData.addTab(tab, g)
+
+	def fetchGenreThread(self, genre, next_page=False):
+		self.loadingAnim.setHidden(False)
+		genre_name = self.genreTabData.tabText(genre)
+		genre_value = self.genreTabData.currentWidget()
+		if genre_value:
+			path_page = genre_value.whatsThis()
+			if next_page:
+				page = 1
+				if "/page/" in path_page:
+					page = int(path_page.split("/page/")[1].replace("/", ""))
+				path_page = "/genres/{}/page/{}/".format(path_page.split("/genres/")[1].split("/")[0], page+1)
+				self.genreTabData.currentWidget().setWhatsThis(path_page)
+			else:
+				self.genreAnimeList.clear()
+			printd("Fetching: " + path_page)
+
+			genres = getGenreAnime(path_page)
+			settings = loadSettings()
+			counter = self.genreAnimeList.count()
+			if eval(settings['slow_mode']):
+				if not next_page:
+					self.genreAnimeList.clear()
+				for r in genres:
+					if counter != self.genreAnimeList.count():
+						break
+					anime, _ = self.addThumbMultiThread(r)
+					self.genreAnimeList.addItem(anime)
+					counter += 1
+				self.loadingAnim.setHidden(True)
+			else:
+				results = ThreadPool(16).map(self.addThumbMultiThread, genres)
+				self.loadingAnim.setHidden(True)
+				for r, _ in results:
+					self.genreAnimeList.addItem(r)
+
 	def getLatest(self):
 		t = threading.Thread(target=self.getLatestThread)
 		t.start()
 
-	def getLatestThread(self):
-		self.AnimeList.clear()
-		settings = loadSettings()
-		counter = 0
-		if eval(settings['slow_mode']):
-			self.loadingAnim.setHidden(True)
-			ongoing = get_main()
+	def getLatestThread(self, page=1):
+		if page == 1:
 			self.AnimeList.clear()
+		settings = loadSettings()
+		counter = self.AnimeList.count()
+		if eval(settings['slow_mode']):
+			ongoing = getOngoing(page)
+			if page == 1:
+				self.AnimeList.clear()
 			for r in ongoing:
 				if counter != self.AnimeList.count():
 					break
@@ -182,18 +267,19 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 				t = threading.Thread(target=self.addJadwalList, args=(r, rawImg,))
 				t.start()
 				counter += 1
+			self.loadingAnim.setHidden(True)
 		else:
-			ongoing = get_main()
+			ongoing = getOngoing(page)
 			results = ThreadPool(16).map(self.addThumbMultiThread, ongoing)
 			self.loadingAnim.setHidden(True)
 			for r, rawImg in results:
 				self.AnimeList.addItem(r)
 				t = threading.Thread(target=self.addJadwalList, args=(r, rawImg,))
 				t.start()
-		#for data in ongoing:
-			#self.addThumbThread(data)
-			#t = threading.Thread(target=self.addThumbThread, args=(data,))
-			#t.start()
+		if page:
+			if not ongoing:
+				page = 0
+			self.AnimeList.setWhatsThis(str(page))
 
 	def addThumbThread(self, data):
 		anime = QtWidgets.QListWidgetItem()

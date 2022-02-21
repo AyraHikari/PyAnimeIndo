@@ -8,6 +8,7 @@
     <file>Roboto.ttf</file>
   </qresource>
   <qresource prefix="icons">
+    <file>img/tags.svg</file>
     <file>img/ripple.svg</file>
     <file>img/bookmark_outline.svg</file>
     <file>img/collection.svg</file>
