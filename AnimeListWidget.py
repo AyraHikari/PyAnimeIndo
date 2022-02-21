@@ -839,7 +839,7 @@ class Ui_AnimeIndo(object):
         self.label_4.setText(_translate("AnimeIndo", "Sabtu"))
         self.label_3.setText(_translate("AnimeIndo", "Minggu"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("AnimeIndo", "2"))
-        self.titleTab_5.setText(_translate("AnimeIndo", "Genre"))
+        self.titleTab_5.setText(_translate("AnimeIndo", "Genre Anime"))
         self.genreTabData.setTabText(self.genreTabData.indexOf(self.tab_6), _translate("AnimeIndo", "None"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("AnimeIndo", "3"))
         self.titleTab_3.setText(_translate("AnimeIndo", "Riwayat Nonton"))
