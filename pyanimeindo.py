@@ -369,7 +369,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 				self.infoType.setText(remove_first_end_spaces(infoData.split(":")[1]))
 			if "skor" in infoData.lower():
 				val = remove_first_end_spaces(infoData.split(":")[1])
-				if val:
+				if val and val.isdigit():
 					skor = int(float(val)/2)
 					if skor >= 1:
 						self.star1.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
