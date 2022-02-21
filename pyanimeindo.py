@@ -252,6 +252,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 
 	def getLatestThread(self, page=1):
 		if page == 1:
+			self.loadingAnim.setHidden(False)
 			self.AnimeList.clear()
 		settings = loadSettings()
 		counter = self.AnimeList.count()
