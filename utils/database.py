@@ -1,4 +1,4 @@
-import json
+import json, time
 
 def loadSettings():
 	data = {}
@@ -38,23 +38,6 @@ def saveData(data):
 	w.close()
 	return True
 
-def loadHistory():
-	data = {}
-	try:
-		r = open("history.json", "r")
-		data = json.loads(r.read())
-	except FileNotFoundError:
-		pass
-	except json.decoder.JSONDecodeError:
-		pass
-	return data
-
-def saveHistory(data):
-	w = open("history.json", "w")
-	w.write(json.dumps(data))
-	w.close()
-	return True
-
 def saveDataAnime(dataTitle, toSave):
 	data = loadData()
 	mydata = {}
@@ -86,31 +69,36 @@ def getSavedAnimeList():
 
 
 def saveHistoryAnime(dataTitle, toSave):
-	data = loadHistory()
+	data = loadData()
 	mydata = {}
-	if data.get('saved'):
-		mydata = data['saved']
+	if data.get('history'):
+		mydata = data['history']
 	mydata[dataTitle] = eval(toSave)
-	data['saved'] = mydata
+	mydata[dataTitle]['time'] = int(time.time())
+	data['history'] = mydata
 	saveData(data)
 	return True
 
 def deleteHistoryAnime(toDel):
 	data = loadData()
 	mydata = []
-	if data.get('saved'):
-		mydata = data['saved']
-	data['saved'].pop(toDel)
+	if data.get('history'):
+		mydata = data['history']
+	data['history'].pop(toDel)
 	saveHistory(data)
 	return True
 
-def getHistoryAnime():
-	data = loadHistory()
-	return data['saved'] if data.get('saved') else {}
+def getHistoryAnime(title):
+	data = loadData()
+	data = data['history'] if data.get('history') else {}
+	if data and data.get(title):
+		return data[title]['history']
+	return []
 
 def getHistoryAnimeList():
-	data = loadHistory()
-	if data.get("saved"):
-		return [data['saved'][x] for x in data['saved']]
+	data = loadData()
+	if history := data.get("history"):
+		ordered = sorted(history, key=lambda x: history[x]['time'], reverse=True)
+		return [history[x] for x in ordered]
 	return {}
 

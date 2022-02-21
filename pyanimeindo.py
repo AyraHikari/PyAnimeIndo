@@ -18,7 +18,7 @@ from Streaming import Ui_Form as Ui_Streaming
 
 from API.animeindo import get_main, get_episodes, get_download, searchAnime, downloadAnime4K, writeLowA4K, writeHighA4K, uninstallA4kdir
 from API.zdl import zdl
-from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime, saveHistoryAnime
+from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime, saveHistoryAnime, getHistoryAnime, getHistoryAnimeList
 from utils.opendialog import OpenDialogApp
 from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking, isWindows, setPresetMPV
 
@@ -99,10 +99,13 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.tabWidget.setCurrentIndex(1)
 
 	def historyBtnAct(self):
-		#self.loadingAnim.setHidden(False)
+		self.loadingAnim.setHidden(False)
 		self.disableMenuBg()
 		self.historyActive.setStyleSheet("background-color: #D2E5F4;border-radius: 12px;")
 		self.tabWidget.setCurrentIndex(2)
+
+		t = threading.Thread(target=self.historyBtnThread)
+		t.start()
 
 	def savedBtnAct(self):
 		self.loadingAnim.setHidden(False)
@@ -120,6 +123,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		if eval(settings['slow_mode']):
 			self.loadingAnim.setHidden(True)
 			d = getSavedAnimeList()
+			[d.pop("eps") for d in d if 'eps' in d]
 			self.savedAnimeList.clear()
 			for r in d:
 				if counter != self.savedAnimeList.count():
@@ -134,6 +138,29 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			self.loadingAnim.setHidden(True)
 			for r, _ in results:
 				self.savedAnimeList.addItem(r)
+
+	def historyBtnThread(self):
+		self.historyAnimeList.clear()
+		settings = loadSettings()
+		counter = 0
+		if eval(settings['slow_mode']):
+			self.loadingAnim.setHidden(True)
+			history = getHistoryAnimeList()
+			[history.pop("eps") for history in history if 'eps' in history]
+			self.historyAnimeList.clear()
+			for r in history:
+				if counter != self.historyAnimeList.count():
+					break
+				anime, _ = self.addThumbMultiThread(r)
+				self.historyAnimeList.addItem(anime)
+				counter += 1
+		else:
+			history = getHistoryAnimeList()
+			[history.pop("eps") for history in history if 'eps' in history]
+			results = ThreadPool(16).map(self.addThumbMultiThread, history)
+			self.loadingAnim.setHidden(True)
+			for r, _ in results:
+				self.historyAnimeList.addItem(r)
 
 	def getLatest(self):
 		t = threading.Thread(target=self.getLatestThread)
@@ -311,6 +338,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		# Get Anime
 		printd("Fetching: " + urlData)
 		data = get_episodes(urlData)
+		self.setStatusTip(strdata)
 
 		image = QtGui.QPixmap()
 		imageData = make_rounded(requests.get(data['cover']).content)
@@ -358,12 +386,16 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 
 		# Parse episodes
 		self.AnimeEps.clear()
+		history = getHistoryAnime(urlData)
 		totalEps = "0"
 		for item in data['episodes']:
 			eps_title = item['title'].lower().replace("subtitle indonesia", "")
 			if data['info']:
 				eps_title = eps_title.replace(remove_first_end_spaces(data['info'].lower().split("judul:")[1].split("\n")[0]), "")
 			eps_title = remove_first_end_spaces(eps_title.replace(dataTitle.lower(), "")).title()
+
+			if item['url'] in history:
+				eps_title = "√ " + eps_title
 
 			if totalEps == "0":
 				if x := [x for x in eps_title.split() if x.isdigit()]:
@@ -559,6 +591,15 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			zdirect = zdl(targeturl)
 			t = threading.Thread(target=self.start_mpv, name="MPV Player", args=(zdirect,dialog,))
 			t.start()
+
+			# Save history
+			d = eval(self.statusTip())
+			ep = self.AnimeEps.currentItem().statusTip()
+			history = getHistoryAnime(d['url'])
+			if ep not in history:
+				history.append(ep)
+			d['history'] = history
+			saveHistoryAnime(d['url'], str(d))
 		except Exception as err:
 			alert = QMessageBox()
 			alert.setWindowTitle("Peringatan")
@@ -629,6 +670,9 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			time.sleep(1)
 
 		dialog.close()
+		eptitle = self.AnimeEps.currentItem().text()
+		if "√" not in eptitle:
+			self.AnimeEps.currentItem().setText("√ " + eptitle)
 		self.enabledAll()
 
 
@@ -684,7 +728,7 @@ class Settings(QDialog, Ui_Settings):
 		mpvPath = "mpv"
 		if self.mpvCustomPath.text() != "":
 			mpvPath = self.mpvCustomPath.text()
-		print(mpvPath)
+		printd(mpvPath)
 
 		try:
 			if "mpv" in mpvPath.lower():
@@ -699,8 +743,7 @@ class Settings(QDialog, Ui_Settings):
 
 		alert = QMessageBox()
 		if out and not err:
-			outp = "MPV ini valid!"
-			outp += "\n\n" + out.decode('utf-8')
+			outp = out.decode('utf-8')
 			alert.setText(outp)
 		elif err == "FileNotFoundError":
 			alert.setText("MPV tidak ditemukan!\nKalian bisa install MPV atau atur path kustom MPV diatas")
