@@ -24,21 +24,22 @@ Selain itu, tanpa adanya browser atau iklan mengganggu, tidak akan terjadinya CP
 - Download PyAnimeIndo di link bawah (Windows.zip)
 - Ekstrak, dan klik 2x pyanimeindo.exe
 
-### Linux atau Windows
+### Linux/Windows/Mac OS
 - Download [python 3.10 atau 3.9](https://www.python.org/downloads/windows/)
 - Download PyAnimeIndo di link bawah (Source code zip), lalu ekstrak
 - Install python tadi
 - Setelah terinstall, klik 2x install.bat atau install.sh untuk linux, lalu tunggu hingga selesai
-- Setelah selesai, klik 2x pyanimeindo.py
+- Setelah selesai, klik 2x pyanimeindo.bat (untuk windows) atau pyanimeindo.sh (untuk linux) atau dengan command `python3 pyanimeindo.py` (untuk lainnya)
 
 # Download
 - [Releases](https://github.com/AyraHikari/PyAnimeIndo/releases) (tanpa donasi)
 - [pling](https://www.pling.com/p/1707646/) (donasi dengan cara men-download tanpa iklan)
 
 # Screenshot
-![image](https://user-images.githubusercontent.com/36266025/153732526-8e60ff1d-0638-4f2b-86d1-fc2f267dc12e.png)
+![image](https://user-images.githubusercontent.com/36266025/155111282-a7bb6ed7-9d2c-48ed-9c37-e071f449daa7.png)
 ![image](https://user-images.githubusercontent.com/36266025/153732528-5b07914a-8d4f-414f-80c9-62b7bb1e0225.png)
-![image](https://user-images.githubusercontent.com/36266025/153732535-9f656a21-9009-45a6-bc86-d9f20e6269df.png)
+![image](https://user-images.githubusercontent.com/36266025/155111309-509642ea-d8bd-42ee-93ff-f90896007870.png)
+![image](https://user-images.githubusercontent.com/36266025/155111358-63388d16-eeda-4fdf-b5a1-e51c760f8bc8.png)
 
 # Integrasi dengan Anime 4k (khusus MPV Player)
 - Buka pengaturan, install versi low atau high untuk VGA kalian
