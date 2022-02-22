@@ -205,7 +205,11 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 
 	def fetchGenreList(self):
 		self.genreTabData.clear()
-		genres = getGenreList()
+		try:
+			genres = getGenreList()
+		except Exception as err:
+			print("Failed to fetch genre list: " + str(err))
+			return
 		for g in genres:
 			tab = QtWidgets.QWidget()
 			tab.setWhatsThis(genres[g])
