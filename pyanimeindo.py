@@ -157,7 +157,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.savedAnimeList.clear()
 		settings = loadSettings()
 		counter = 0
-		if eval(settings['slow_mode']):
+		if settings.get('slow_mode') and eval(settings['slow_mode']):
 			self.loadingAnim.setHidden(True)
 			d = getSavedAnimeList()
 			[d.pop("eps") for d in d if 'eps' in d]
@@ -180,7 +180,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.historyAnimeList.clear()
 		settings = loadSettings()
 		counter = 0
-		if eval(settings['slow_mode']):
+		if settings.get('slow_mode') and eval(settings['slow_mode']):
 			self.loadingAnim.setHidden(True)
 			history = getHistoryAnimeList()
 			[history.pop("eps") for history in history if 'eps' in history]
@@ -230,7 +230,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			genres = getGenreAnime(path_page)
 			settings = loadSettings()
 			counter = self.genreAnimeList.count()
-			if eval(settings['slow_mode']):
+			if settings.get('slow_mode') and eval(settings['slow_mode']):
 				if not next_page:
 					self.genreAnimeList.clear()
 				for r in genres:
@@ -256,7 +256,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 			self.AnimeList.clear()
 		settings = loadSettings()
 		counter = self.AnimeList.count()
-		if eval(settings['slow_mode']):
+		if settings.get('slow_mode') and eval(settings['slow_mode']):
 			ongoing = getOngoing(page)
 			if page == 1:
 				self.AnimeList.clear()
@@ -372,7 +372,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		listData.clear()
 		settings = loadSettings()
 		counter = 0
-		if eval(settings['slow_mode']):
+		if settings.get('slow_mode') and eval(settings['slow_mode']):
 			self.loadingAnim.setHidden(True)
 			lists = searchAnime(title)
 			self.AnimeList.clear()
@@ -499,7 +499,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		self.recommendList.clear()
 		settings = loadSettings()
 		counter = 0
-		if eval(settings['slow_mode']):
+		if settings.get('slow_mode') and eval(settings['slow_mode']):
 			for r in data['recommend']:
 				if counter != self.recommendList.count():
 					break
