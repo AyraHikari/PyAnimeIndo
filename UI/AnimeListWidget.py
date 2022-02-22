@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'AnimeListWidget.ui'
+# Form implementation generated from reading ui file 'UI\AnimeListWidget.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -25,7 +25,6 @@ class Ui_AnimeIndo(object):
         self.profilePic.setStyleSheet("border-radius: 25%;\n"
 "background-color: #ccc;\n"
 "color: rgb(50, 50, 50);")
-        self.profilePic.setPixmap(QtGui.QPixmap(":/font/Roboto.ttf"))
         self.profilePic.setScaledContents(True)
         self.profilePic.setObjectName("profilePic")
         self.sidebarBg = QtWidgets.QLabel(self.centralwidget)
@@ -56,7 +55,7 @@ class Ui_AnimeIndo(object):
         self.latestIcon = QtWidgets.QLabel(self.centralwidget)
         self.latestIcon.setGeometry(QtCore.QRect(50, 147, 24, 24))
         self.latestIcon.setStyleSheet("background-color: #00000000;")
-        self.latestIcon.setPixmap(QtGui.QPixmap(":/icons/img/latest.svg"))
+        self.latestIcon.setPixmap(QtGui.QPixmap(":/icons/resources/latest.svg"))
         self.latestIcon.setScaledContents(True)
         self.latestIcon.setObjectName("latestIcon")
         self.latestLabel = QtWidgets.QLabel(self.centralwidget)
@@ -100,7 +99,7 @@ class Ui_AnimeIndo(object):
         self.jadwalIcon = QtWidgets.QLabel(self.centralwidget)
         self.jadwalIcon.setGeometry(QtCore.QRect(50, 207, 24, 24))
         self.jadwalIcon.setStyleSheet("background-color: #00000000;")
-        self.jadwalIcon.setPixmap(QtGui.QPixmap(":/icons/img/time.svg"))
+        self.jadwalIcon.setPixmap(QtGui.QPixmap(":/icons/resources/time.svg"))
         self.jadwalIcon.setScaledContents(True)
         self.jadwalIcon.setObjectName("jadwalIcon")
         self.border2 = QtWidgets.QFrame(self.centralwidget)
@@ -113,7 +112,7 @@ class Ui_AnimeIndo(object):
         self.historyIcon = QtWidgets.QLabel(self.centralwidget)
         self.historyIcon.setGeometry(QtCore.QRect(50, 328, 24, 24))
         self.historyIcon.setStyleSheet("background-color: #00000000;")
-        self.historyIcon.setPixmap(QtGui.QPixmap(":/icons/img/collection.svg"))
+        self.historyIcon.setPixmap(QtGui.QPixmap(":/icons/resources/collection.svg"))
         self.historyIcon.setScaledContents(True)
         self.historyIcon.setObjectName("historyIcon")
         self.historyLabel = QtWidgets.QLabel(self.centralwidget)
@@ -153,7 +152,7 @@ class Ui_AnimeIndo(object):
         self.savedIcon = QtWidgets.QLabel(self.centralwidget)
         self.savedIcon.setGeometry(QtCore.QRect(50, 388, 24, 24))
         self.savedIcon.setStyleSheet("background-color: #00000000;")
-        self.savedIcon.setPixmap(QtGui.QPixmap(":/icons/img/bookmark.svg"))
+        self.savedIcon.setPixmap(QtGui.QPixmap(":/icons/resources/bookmark.svg"))
         self.savedIcon.setScaledContents(True)
         self.savedIcon.setObjectName("savedIcon")
         self.settingsLabel = QtWidgets.QLabel(self.centralwidget)
@@ -169,7 +168,7 @@ class Ui_AnimeIndo(object):
         self.settingsIcon = QtWidgets.QLabel(self.centralwidget)
         self.settingsIcon.setGeometry(QtCore.QRect(50, 448, 24, 24))
         self.settingsIcon.setStyleSheet("background-color: #00000000;")
-        self.settingsIcon.setPixmap(QtGui.QPixmap(":/icons/img/cog.svg"))
+        self.settingsIcon.setPixmap(QtGui.QPixmap(":/icons/resources/cog.svg"))
         self.settingsIcon.setScaledContents(True)
         self.settingsIcon.setObjectName("settingsIcon")
         self.latestActive = QtWidgets.QLabel(self.centralwidget)
@@ -761,7 +760,7 @@ class Ui_AnimeIndo(object):
         self.genreIcon = QtWidgets.QLabel(self.centralwidget)
         self.genreIcon.setGeometry(QtCore.QRect(50, 268, 24, 24))
         self.genreIcon.setStyleSheet("background-color: #00000000;")
-        self.genreIcon.setPixmap(QtGui.QPixmap(":/icons/img/tags.svg"))
+        self.genreIcon.setPixmap(QtGui.QPixmap(":/icons/resources/tags.svg"))
         self.genreIcon.setScaledContents(True)
         self.genreIcon.setObjectName("genreIcon")
         self.border5 = QtWidgets.QFrame(self.centralwidget)

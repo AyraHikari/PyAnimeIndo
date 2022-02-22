@@ -1,31 +1,32 @@
 <RCC>
-  <qresource prefix="images">
-    <file>img/ripple.gif</file>
-    <file>img/c1.jpg</file>
-    <file>ayra.jpg</file>
-  </qresource>
   <qresource prefix="font">
-    <file>Roboto.ttf</file>
+    <file>resources/Roboto.ttf</file>
   </qresource>
   <qresource prefix="icons">
-    <file>img/tags.svg</file>
-    <file>img/ripple.svg</file>
-    <file>img/bookmark_outline.svg</file>
-    <file>img/collection.svg</file>
-    <file>img/film.svg</file>
-    <file>img/latest.svg</file>
-    <file>img/time.svg</file>
-    <file>img/bookmark.svg</file>
-    <file>img/cog.svg</file>
-    <file>img/clock.svg</file>
-    <file>img/close.svg</file>
-    <file>img/genre.svg</file>
-    <file>img/github.png</file>
-    <file>img/kofi.svg</file>
-    <file>img/star_off.svg</file>
-    <file>img/star_on.svg</file>
-    <file>img/status.svg</file>
-    <file>img/studio.svg</file>
-    <file>img/type.svg</file>
+    <file>resources/bookmark.svg</file>
+    <file>resources/bookmark_outline.svg</file>
+    <file>resources/clock.svg</file>
+    <file>resources/close.svg</file>
+    <file>resources/cog.svg</file>
+    <file>resources/collection.svg</file>
+    <file>resources/film.svg</file>
+    <file>resources/genre.svg</file>
+    <file>resources/kofi.svg</file>
+    <file>resources/latest.svg</file>
+    <file>resources/ripple.svg</file>
+    <file>resources/star_off.svg</file>
+    <file>resources/star_on.svg</file>
+    <file>resources/status.svg</file>
+    <file>resources/studio.svg</file>
+    <file>resources/tags.svg</file>
+    <file>resources/time.svg</file>
+    <file>resources/type.svg</file>
+    <file>resources/github.png</file>
+  </qresource>
+  <qresource prefix="images">
+    <file>resources/ayra.jpg</file>
+  </qresource>
+  <qresource prefix="animation">
+    <file>resources/ripple.gif</file>
   </qresource>
 </RCC>

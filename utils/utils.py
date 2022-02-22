@@ -64,7 +64,7 @@ def write_eps_cover(img, eps):
 	draw = ImageDraw.Draw(img)
 	w, h = img.size
 
-	stream = QFile(":/font/Roboto.ttf")
+	stream = QFile(":/font/resources/Roboto.ttf")
 	if stream.open(QFile.ReadOnly):
 		fontData = stream.readAll()
 		stream.close()

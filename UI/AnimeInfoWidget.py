@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'AnimeInfoWidget.ui'
+# Form implementation generated from reading ui file 'UI\AnimeInfoWidget.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -152,7 +152,7 @@ class Ui_Dialog(object):
         self.widget.setObjectName("widget")
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setGeometry(QtCore.QRect(64, 20, 32, 32))
-        self.label.setPixmap(QtGui.QPixmap(":/icons/img/studio.svg"))
+        self.label.setPixmap(QtGui.QPixmap(":/icons/resources/studio.svg"))
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
         self.infoStudio = QtWidgets.QLabel(self.widget)
@@ -185,7 +185,7 @@ class Ui_Dialog(object):
         self.infoType.setObjectName("infoType")
         self.label_4 = QtWidgets.QLabel(self.widget)
         self.label_4.setGeometry(QtCore.QRect(169, 20, 32, 32))
-        self.label_4.setPixmap(QtGui.QPixmap(":/icons/img/clock.svg"))
+        self.label_4.setPixmap(QtGui.QPixmap(":/icons/resources/clock.svg"))
         self.label_4.setAlignment(QtCore.Qt.AlignCenter)
         self.label_4.setObjectName("label_4")
         self.infoGenre = QtWidgets.QLabel(self.widget)
@@ -204,7 +204,7 @@ class Ui_Dialog(object):
         self.infoGenre.setObjectName("infoGenre")
         self.label_6 = QtWidgets.QLabel(self.widget)
         self.label_6.setGeometry(QtCore.QRect(269, 20, 32, 32))
-        self.label_6.setPixmap(QtGui.QPixmap(":/icons/img/genre.svg"))
+        self.label_6.setPixmap(QtGui.QPixmap(":/icons/resources/genre.svg"))
         self.label_6.setAlignment(QtCore.Qt.AlignCenter)
         self.label_6.setObjectName("label_6")
         self.infoStatus = QtWidgets.QLabel(self.widget)
@@ -223,7 +223,7 @@ class Ui_Dialog(object):
         self.infoStatus.setObjectName("infoStatus")
         self.label_8 = QtWidgets.QLabel(self.widget)
         self.label_8.setGeometry(QtCore.QRect(385, 20, 32, 32))
-        self.label_8.setPixmap(QtGui.QPixmap(":/icons/img/status.svg"))
+        self.label_8.setPixmap(QtGui.QPixmap(":/icons/resources/status.svg"))
         self.label_8.setAlignment(QtCore.Qt.AlignCenter)
         self.label_8.setObjectName("label_8")
         self.totalEpisode = QtWidgets.QLabel(Dialog)
@@ -251,7 +251,7 @@ class Ui_Dialog(object):
 "left: 318px;\n"
 "top: 132px;\n"
 "border-radius: 2px;\n"
-"border-image: url(:/icons/img/star_off.svg);")
+"border-image: url(:/icons/resources/star_off.svg);")
         self.star1.setScaledContents(True)
         self.star1.setObjectName("star1")
         self.star2 = QtWidgets.QLabel(Dialog)
@@ -261,7 +261,7 @@ class Ui_Dialog(object):
 "left: 318px;\n"
 "top: 132px;\n"
 "border-radius: 2px;\n"
-"border-image: url(:/icons/img/star_off.svg);")
+"border-image: url(:/icons/resources/star_off.svg);")
         self.star2.setScaledContents(True)
         self.star2.setObjectName("star2")
         self.star3 = QtWidgets.QLabel(Dialog)
@@ -271,7 +271,7 @@ class Ui_Dialog(object):
 "left: 318px;\n"
 "top: 132px;\n"
 "border-radius: 2px;\n"
-"border-image: url(:/icons/img/star_off.svg);")
+"border-image: url(:/icons/resources/star_off.svg);")
         self.star3.setScaledContents(True)
         self.star3.setObjectName("star3")
         self.star4 = QtWidgets.QLabel(Dialog)
@@ -281,7 +281,7 @@ class Ui_Dialog(object):
 "left: 318px;\n"
 "top: 132px;\n"
 "border-radius: 2px;\n"
-"border-image: url(:/icons/img/star_off.svg);")
+"border-image: url(:/icons/resources/star_off.svg);")
         self.star4.setScaledContents(True)
         self.star4.setObjectName("star4")
         self.star5 = QtWidgets.QLabel(Dialog)
@@ -291,7 +291,7 @@ class Ui_Dialog(object):
 "left: 318px;\n"
 "top: 132px;\n"
 "border-radius: 2px;\n"
-"border-image: url(:/icons/img/star_off.svg);")
+"border-image: url(:/icons/resources/star_off.svg);")
         self.star5.setScaledContents(True)
         self.star5.setObjectName("star5")
         self.label_15 = QtWidgets.QLabel(Dialog)
@@ -343,7 +343,7 @@ class Ui_Dialog(object):
 "color: #000;\n"
 "background: #fff;")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/img/bookmark_outline.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/icons/resources/bookmark_outline.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.saveThis.setIcon(icon)
         self.saveThis.setIconSize(QtCore.QSize(32, 32))
         self.saveThis.setObjectName("saveThis")

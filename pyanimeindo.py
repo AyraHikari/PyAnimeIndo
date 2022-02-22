@@ -10,11 +10,11 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QEvent, QFile, QObject, QThread, QSize, pyqtSignal
 from PyQt5.uic import loadUi
 
-from AnimeListWidget import Ui_AnimeIndo
-from AnimeInfoWidget import Ui_Dialog as Ui_AnimeInfo
-from About import Ui_Dialog as Ui_About
-from Settings import Ui_Dialog as Ui_Settings
-from Streaming import Ui_Form as Ui_Streaming
+from UI.AnimeListWidget import Ui_AnimeIndo
+from UI.AnimeInfoWidget import Ui_Dialog as Ui_AnimeInfo
+from UI.About import Ui_Dialog as Ui_About
+from UI.Settings import Ui_Dialog as Ui_Settings
+from UI.Streaming import Ui_Form as Ui_Streaming
 
 from API.anime4k import downloadAnime4K, writeLowA4K, writeHighA4K, uninstallA4kdir
 from API.otakudesu import *
@@ -38,7 +38,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.setupUi(self)
 
 
-		animated_spinner = QtGui.QMovie(":/images/img/ripple.gif")
+		animated_spinner = QtGui.QMovie(":/animation/resources/ripple.gif")
 		self.loadingAnim.setMovie(animated_spinner)
 		animated_spinner.start()
 
@@ -76,7 +76,7 @@ class MainWindow(QMainWindow, Ui_AnimeIndo):
 		self.searchBar.returnPressed.connect(lambda: self.search(self.searchBar, self.AnimeList))
 		self.titleTab.clicked.connect(self.getLatest)
 
-		stream = QFile(":/images/ayra.jpg")
+		stream = QFile(":/images/resources/ayra.jpg")
 		if stream.open(QFile.ReadOnly):
 			profilePic = stream.readAll()
 			stream.close()
@@ -440,10 +440,10 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 
 		if strdata:
 			if urlData in getSavedAnime():
-				self.saveThis.setIcon(QtGui.QIcon(":/icons/img/bookmark.svg"))
+				self.saveThis.setIcon(QtGui.QIcon(":/icons/resources/bookmark.svg"))
 				self.saveThis.setStyleSheet("padding: 12px 8px;\nposition: absolute;\nborder: 1px solid rgba(45, 45, 45, 0.8);\nborder-radius: 4px;\ncolor: #000;\nbackground: #fff;")
 			else:
-				self.saveThis.setIcon(QtGui.QIcon(":/icons/img/bookmark_outline.svg"))
+				self.saveThis.setIcon(QtGui.QIcon(":/icons/resources/bookmark_outline.svg"))
 				self.saveThis.setStyleSheet("padding: 12px 8px;\nposition: absolute;\nborder: 1px solid rgba(45, 45, 45, 0.3);\nborder-radius: 4px;\ncolor: #000;\nbackground: #fff;")
 			self.saveThis.setStatusTip(str(strdata))
 
@@ -460,18 +460,21 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 				self.infoType.setText(remove_first_end_spaces(infoData.split(":")[1]))
 			if "skor" in infoData.lower():
 				val = remove_first_end_spaces(infoData.split(":")[1])
-				if val and val.isdigit():
-					skor = int(float(val)/2)
+				if val:
+					try:
+						skor = int(float(val)/2)
+					except ValueError:
+						skor = 0
 					if skor >= 1:
-						self.star1.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
+						self.star1.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/resources/star_on.svg);")
 					if skor >= 2:
-						self.star2.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
+						self.star2.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/resources/star_on.svg);")
 					if skor >= 3:
-						self.star3.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
+						self.star3.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/resources/star_on.svg);")
 					if skor >= 4:
-						self.star4.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
+						self.star4.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/resources/star_on.svg);")
 					if skor >= 5:
-						self.star5.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/img/star_on.svg);")
+						self.star5.setStyleSheet("width: 30px;\nheight: 30px;\nleft: 318px;\ntop: 132px;\nborder-radius: 2px;\nborder-image: url(:/icons/resources/star_on.svg);")
 
 		self.setWindowTitle(remove_first_end_spaces(data['info'].lower().split("judul:")[1].split("\n")[0]).title())
 
@@ -742,11 +745,11 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 
 		if eval(d)['url'] in getSavedAnime():
 			deleteDataAnime(eval(d)['url'])
-			self.saveThis.setIcon(QtGui.QIcon(":/icons/img/bookmark_outline.svg"))
+			self.saveThis.setIcon(QtGui.QIcon(":/icons/resources/bookmark_outline.svg"))
 			self.saveThis.setStyleSheet("padding: 12px 8px;\nposition: absolute;\nborder: 1px solid rgba(45, 45, 45, 0.3);\nborder-radius: 4px;\ncolor: #000;\nbackground: #fff;")
 		else:
 			saveDataAnime(eval(d)['url'], d)
-			self.saveThis.setIcon(QtGui.QIcon(":/icons/img/bookmark.svg"))
+			self.saveThis.setIcon(QtGui.QIcon(":/icons/resources/bookmark.svg"))
 			self.saveThis.setStyleSheet("padding: 12px 8px;\nposition: absolute;\nborder: 1px solid rgba(45, 45, 45, 0.8);\nborder-radius: 4px;\ncolor: #000;\nbackground: #fff;")
 
 
