@@ -69,7 +69,7 @@ def write_eps_cover(img, eps):
 		fontData = stream.readAll()
 		stream.close()
 	font = ImageFont.truetype(BytesIO(fontData), 16)
-	text_w, text_h = draw.textsize(eps, font)
+	_, _, text_w, text_h = draw.textbbox((0,0), eps, font)
 	draw.rounded_rectangle((-30, h - h/12-2, text_w +12, h + text_h), 5, fill="#E8EFF5")
 	draw.text((5, h - text_h - 5), eps, "black", font=font)
 	return img
