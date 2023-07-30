@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from API.extractor.desudrive import desudrive
 
 host = "https://otakudesu.lol/"
 
@@ -67,15 +68,30 @@ def getDownload(url):
 	ret = {}
 
 	download = data.find('div', {'class': 'download'})
-	for dlurl in download.findAll("li"):
-		filetype = dlurl.strong.text
-		fileurl = ""
-		for urlname in dlurl.findAll("a"):
-			if "zippyshare" in urlname.text.lower():
-				fileurl = urlname['href']
-		if not fileurl:
-			fileurl = dlurl.a['href']
-		ret[filetype] = fileurl
+	if download:
+		for dlurl in download.findAll("li"):
+			filetype = dlurl.strong.text
+			fileurl = ""
+			for urlname in dlurl.findAll("a"):
+				if "kfiles" in urlname.text.lower():
+					fileurl = urlname['href']
+					if "desudrive" in fileurl:
+						fileurl = desudrive(fileurl)
+			if not fileurl:
+				fileurl = dlurl.a['href']
+			ret[filetype] = fileurl
+	elif batchlink := data.find('div', {'class': 'batchlink'}):
+		for dlurl in batchlink.findAll("li"):
+			filetype = dlurl.strong.text
+			fileurl = ""
+			for urlname in dlurl.findAll("a"):
+				if "kfiles" in urlname.text.lower():
+					fileurl = urlname['href']
+					if "desudrive" in fileurl:
+						fileurl = desudrive(fileurl)
+			if not fileurl:
+				fileurl = dlurl.a['href']
+			ret[filetype] = fileurl
 
 	return ret
 

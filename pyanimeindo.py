@@ -18,7 +18,8 @@ from UI.Streaming import Ui_Form as Ui_Streaming
 
 from API.anime4k import downloadAnime4K, writeLowA4K, writeHighA4K, uninstallA4kdir
 from API.otakudesu import *
-from API.zdl import zdl
+from API.extractor.zdl import zdl
+from API.extractor.krakenfiles import getStream
 from utils.database import loadSettings, saveSettings, saveDataAnime, getSavedAnime, getSavedAnimeList, deleteDataAnime, saveHistoryAnime, getHistoryAnime, getHistoryAnimeList
 from utils.opendialog import OpenDialogApp
 from utils.utils import remove_first_end_spaces, make_rounded, make_rounded_res, svg_color, checkMpvWorking, isWindows, setPresetMPV
@@ -549,7 +550,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			self.greyAllQ()
 			self.firstQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
 
-		if "zippyshare" in self.firstQuality.statusTip():
+		if "krakenfiles" in self.firstQuality.statusTip():
 			self.StreamingBtn.setEnabled(True)
 			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
 		else:
@@ -561,7 +562,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			self.greyAllQ()
 			self.secondQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
 
-		if "zippyshare" in self.secondQuality.statusTip():
+		if "krakenfiles" in self.secondQuality.statusTip():
 			self.StreamingBtn.setEnabled(True)
 			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
 		else:
@@ -573,7 +574,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			self.greyAllQ()
 			self.thirdQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
 
-		if "zippyshare" in self.thirdQuality.statusTip():
+		if "krakenfiles" in self.thirdQuality.statusTip():
 			self.StreamingBtn.setEnabled(True)
 			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
 		else:
@@ -585,7 +586,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			self.greyAllQ()
 			self.fourthQuality.setStyleSheet("position: absolute;background: #2D2D2D;border-radius: 8px;text-align: center;color: #fff;")
 
-		if "zippyshare" in self.fourthQuality.statusTip():
+		if "krakenfiles" in self.fourthQuality.statusTip():
 			self.StreamingBtn.setEnabled(True)
 			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
 		else:
@@ -641,7 +642,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 				else:
 					self.fourthQuality.setStyleSheet("position: absolute;background: #F4F4F4;border-radius: 8px;text-align: center;color: #333;")
 
-		if "zippyshare" in self.firstQuality.statusTip():
+		if "krakenfiles" in self.firstQuality.statusTip():
 			self.StreamingBtn.setEnabled(True)
 			self.StreamingBtn.setStyleSheet("padding: 12px 8px;position: absolute;background: #E84545;border-radius: 4px;color: #FFFFFF;")
 		else:
@@ -655,7 +656,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 	def getDownload(self, data):
 		targeturl = self.AnimeQuality.currentItem().statusTip()
 		self.DownloadBtn.setEnabled(True)
-		if "zippyshare" in targeturl:
+		if "krakenfiles" in targeturl:
 			self.StreamingBtn.setEnabled(True)
 		else:
 			self.StreamingBtn.setEnabled(False)
@@ -682,7 +683,9 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		dialog.show()
 		printd("Fetching: " + targeturl)
 		try:
-			zdirect = zdl(targeturl)
+			zdirect = getStream(targeturl)
+			if not zdirect:
+				raise Exception("Link stream not found")
 			t = threading.Thread(target=self.start_mpv, name="MPV Player", args=(zdirect,dialog,))
 			t.start()
 
@@ -699,6 +702,8 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 			alert.setWindowTitle("Peringatan")
 			if str(err) == "Failed to get file URL. Down?":
 				alert.setText("Link rusak, tolong pilih resolusi lainnya")
+			else:
+				alert.setText(err)
 			alert.exec()
 			dialog.close()
 			self.enabledAll()
@@ -759,7 +764,7 @@ class AnimeInfo(QDialog, Ui_AnimeInfo):
 		if settings.get("mpv_path"):
 			mpv_cmd = settings['mpv_path']
 
-		p = subp.Popen("\"" + mpv_cmd + "\" " + url, shell=True)
+		p = subp.Popen("\"" + mpv_cmd + "\" \"" + url + "\"", shell=True)
 		while p.poll() is None:
 			time.sleep(1)
 
