@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-host = "https://otakudesu.pro/"
+host = "https://otakudesu.lol/"
 
 def getOngoing(next_page=1):
 	data = BeautifulSoup(requests.get(host + f"ongoing-anime/page/{next_page}/").text, features="html.parser")
@@ -81,7 +81,7 @@ def getDownload(url):
 
 
 def searchAnime(title):
-	a = BeautifulSoup(requests.get("https://otakudesu.pro/?s={}&post_type=anime".format(title)).content, features="html.parser")
+	a = BeautifulSoup(requests.get(host + "/?s={}&post_type=anime".format(title)).content, features="html.parser")
 	s = a.find("ul", {"class": "chivsrc"}).findAll("li")
 	data = []
 	for x in s:
