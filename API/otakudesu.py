@@ -2,7 +2,17 @@ import requests
 from bs4 import BeautifulSoup
 from API.extractor.desudrive import desudrive
 
-host = "https://otakudesu.lol/"
+def getHost():
+	response = requests.get('https://otakudesu.io/')
+	soup = BeautifulSoup(response.text, features='html.parser')
+
+	url_link = soup.find('a', {'id': 'skip'})
+	if url_link:
+		return url_link['href']
+	else:
+		raise Exception('Cannot find the host link')
+
+host = getHost()
 
 def getOngoing(next_page=1):
 	data = BeautifulSoup(requests.get(host + f"ongoing-anime/page/{next_page}/").text, features="html.parser")
